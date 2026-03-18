@@ -2,73 +2,103 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSI FP1 Master Prep</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FP1 Exam Pro 2026</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; -webkit-user-select: none; user-select: none; }
-        .quiz-card { max-width: 550px; margin: 20px auto; background: white; padding: 30px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); min-height: 450px; }
-        .btn-option { width: 100%; text-align: left; margin-bottom: 12px; padding: 18px; border: 2px solid #e9ecef; border-radius: 15px; background: white; transition: 0.2s; font-size: 1rem; }
-        .correct { background-color: #d1fae5 !important; border-color: #10b981 !important; color: #065f46; font-weight: 600; }
-        .wrong { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b; }
-        .progress-bar { height: 10px; border-radius: 5px; background-color: #e9ecef; margin-bottom: 25px; }
-        .progress-fill { height: 100%; background: #3b82f6; border-radius: 5px; transition: 0.5s; }
-        .set-btn { padding: 25px; font-size: 1.1rem; margin-bottom: 15px; border-radius: 15px; width: 100%; font-weight: 600; text-align: left; position: relative; }
-        .set-btn i { float: right; }
-        .nav-buttons { display: flex; gap: 10px; margin-top: 20px; }
-        .back-home { cursor: pointer; color: #3b82f6; font-size: 0.9rem; font-weight: 600; }
-        .score-badge { position: absolute; right: 50px; top: 25px; font-size: 0.8rem; background: #e2e8f0; padding: 2px 10px; border-radius: 10px; }
+        :root { --primary: #0f172a; --accent: #3b82f6; --success: #10b981; --danger: #f43f5e; --bg: #f1f5f9; }
+        body { background: var(--bg); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; color: #334155; }
+        .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; padding: 15px; }
+        
+        /* Modern Card Interface */
+        .glass-card { background: white; border-radius: 28px; padding: 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.7); }
+        
+        /* Timer Bar */
+        #timer-container { height: 4px; background: #e2e8f0; border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
+        #timer-fill { height: 100%; background: var(--accent); width: 100%; transition: width 1s linear; }
+        
+        /* Options */
+        .option-box { width: 100%; text-align: left; margin-bottom: 12px; padding: 18px; border: 2px solid #f1f5f9; border-radius: 20px; background: white; transition: 0.2s; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; }
+        .option-box:hover { border-color: var(--accent); background: #f0f7ff; }
+        .correct { background: #dcfce7 !important; border-color: var(--success) !important; color: #166534; font-weight: 600; }
+        .wrong { background: #fee2e2 !important; border-color: var(--danger) !important; color: #991b1b; }
+        
+        /* Floating Calculator Toggle */
+        .calc-toggle { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px rgba(0,0,0,0.2); z-index: 1000; cursor: pointer; }
+        #calculator { display: none; position: fixed; bottom: 80px; right: 20px; width: 250px; background: white; border-radius: 20px; box-shadow: 0 20px 25px rgba(0,0,0,0.1); padding: 15px; z-index: 1000; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="quiz-card">
-        <div id="selection-ui">
-            <h3 class="mb-2">FP1 Practice Sets</h3>
-            <p class="text-muted mb-4 small">Progress is saved automatically.</p>
-            <div id="set-list">
-                <button class="btn btn-outline-primary set-btn" onclick="startSet(1)">
-                    Set 1: Foundations & Process <span id="progress-1" class="score-badge">0%</span> <i class="bi bi-chevron-right"></i>
-                </button>
-                <button class="btn btn-outline-primary set-btn" onclick="startSet(2)">
-                    Set 2: Technical Math & Tax <span id="progress-2" class="score-badge">0%</span> <i class="bi bi-chevron-right"></i>
-                </button>
-                <button class="btn btn-outline-primary set-btn" onclick="startSet(3)">
-                    Set 3: Advanced Cases <span id="progress-3" class="score-badge">0%</span> <i class="bi bi-chevron-right"></i>
-                </button>
-            </div>
-            <p class="mt-4 small text-danger text-center" style="cursor:pointer" onclick="resetAll()">Clear All Progress</p>
+<div class="app-container">
+    <div id="selection-ui" class="glass-card text-center my-auto">
+        <h1 class="fw-bold mb-1">FP1 Master</h1>
+        <p class="text-muted small mb-4">Practice Sets & Full Exam Simulation</p>
+        
+        <div class="d-grid gap-3">
+            <button class="btn btn-primary py-3 rounded-4 fw-bold" onclick="startExam()">
+                <i class="bi bi-stopwatch me-2"></i> Start 3-Hour Simulated Exam
+            </button>
+            <hr class="my-2">
+            <button class="btn btn-outline-secondary py-3 rounded-4" onclick="startSet(1)">Set 1: Foundations</button>
+            <button class="btn btn-outline-secondary py-3 rounded-4" onclick="startSet(2)">Set 2: Math & Tax</button>
+            <button class="btn btn-outline-secondary py-3 rounded-4" onclick="startSet(3)">Set 3: Advanced Cases</button>
+        </div>
+        
+        <div class="mt-4 text-center">
+            <small class="text-danger" style="cursor:pointer" onclick="resetAll()">Reset All Progress</small>
+        </div>
+    </div>
+
+    <div id="quiz-ui" class="d-none glass-card">
+        <div id="timer-container" class="d-none">
+            <div id="timer-fill"></div>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="fw-bold text-muted" id="mode-text">Practice Set</span>
+            <span id="timer-text" class="badge bg-dark rounded-pill d-none">03:00:00</span>
+            <i class="bi bi-info-circle" style="cursor:pointer" onclick="showHint()"></i>
         </div>
 
-        <div id="quiz-ui" class="d-none">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="back-home" onclick="goHome()"><i class="bi bi-house-door"></i> Menu</span>
-                <i class="bi bi-info-circle text-muted" style="cursor:pointer; font-size: 1.2rem;" id="info-trigger"></i>
-            </div>
-            <div class="progress-bar"><div id="progress-bar" class="progress-fill"></div></div>
-            <small id="q-count" class="text-muted mb-2 d-block"></small>
-            <h5 id="question" class="mb-4"></h5>
-            <div id="options"></div>
-            <div id="feedback" class="mt-3 p-3 rounded d-none border"></div>
-            <div class="nav-buttons">
-                <button id="back-btn" class="btn btn-outline-secondary flex-grow-1" onclick="prevQuestion()">Back</button>
-                <button id="next-btn" class="btn btn-primary flex-grow-1 d-none" onclick="nextQuestion()">Next</button>
-            </div>
-        </div>
+        <div id="q-meta" class="small text-muted mb-2">Q 1/80</div>
+        <h5 id="question-text" class="fw-bold mb-4"></h5>
+        
+        <div id="options-container"></div>
+        
+        <div id="feedback" class="mt-3 p-3 rounded-4 d-none"></div>
 
-        <div id="result-ui" class="d-none text-center">
-            <h3 class="mb-3">Set Complete! 🎉</h3>
-            <p id="score-text" class="display-5 fw-bold text-primary mb-4"></p>
-            <button class="btn btn-success w-100 p-3 rounded-pill mb-2" onclick="resetCurrentSet()">Retry This Set</button>
-            <button class="btn btn-outline-secondary w-100 p-3 rounded-pill" onclick="goHome()">Back to Sets</button>
+        <div class="d-flex gap-2 mt-4">
+            <button id="back-btn" class="btn btn-light py-3 rounded-4 flex-grow-1" onclick="prevQ()">Back</button>
+            <button id="next-btn" class="btn btn-primary py-3 rounded-4 flex-grow-1 d-none" onclick="nextQ()">Next</button>
         </div>
+    </div>
+
+    <div id="result-ui" class="d-none glass-card text-center my-auto">
+        <div class="fs-1 mb-2">🎓</div>
+        <h2 class="fw-bold">Exam Complete</h2>
+        <h1 id="score-text" class="display-2 fw-bold text-primary my-4"></h1>
+        <p id="time-spent" class="text-muted mb-4"></p>
+        <button class="btn btn-dark w-100 py-3 rounded-pill" onclick="location.reload()">Return Home</button>
+    </div>
+</div>
+
+<div class="calc-toggle" onclick="toggleCalc()"><i class="bi bi-calculator"></i></div>
+<div id="calculator">
+    <input type="text" id="calc-display" class="form-control mb-2 text-end fs-4" readonly>
+    <div class="row g-1">
+        <div class="col-3"><button class="btn btn-light w-100" onclick="calcInput('7')">7</button></div>
+        <div class="col-3"><button class="btn btn-light w-100" onclick="calcInput('8')">8</button></div>
+        <div class="col-3"><button class="btn btn-light w-100" onclick="calcInput('9')">9</button></div>
+        <div class="col-3"><button class="btn btn-warning w-100" onclick="calcInput('/')">/</button></div>
+        <div class="col-6"><button class="btn btn-danger w-100" onclick="calcClear()">C</button></div>
+        <div class="col-6"><button class="btn btn-success w-100" onclick="calcEval()">=</button></div>
     </div>
 </div>
 
 <script>
-// --- ROBUST DATA LOADING ---
+// --- DATA TABLES ---
 const set1Raw = `Which principle requires an advisor to be honest and put the client's interests first?|Objectivity|Integrity|Professionalism|Confidentiality|1|Integrity is the bedrock of the client-advisor relationship.|Ch 11: Ethics
 During the 'Gathering' phase, you discover a client has no Will. What is your next action?|Draft a will for them|Note it as a gap in the analysis phase|Tell them it doesn't matter yet|Ask them for their tax return instead|1|Identifying missing documents is part of the Analysis phase gap check.|Ch 1: Process
 A client earns $60k salary and $5k in eligible dividends. What is the dividend gross-up rate?|15%|38%|50%|100%|1|Eligible dividends are grossed up by 38% for tax purposes.|Ch 4: Taxation
@@ -281,88 +311,102 @@ What is the 'Principal Residence Exemption'?|You don't have to pay property tax|
 Which questioning style is best for a first meeting?|Yes/No questions|Open-ended questions (How, What, Why)|Leading questions|Silence|1|Open-ended questions encourage the client to share details.|Ch 1: Process
 How often should a financial plan be reviewed?|Every 10 years|Only when the client asks|At least annually or during major life events|Never|2|Monitoring is essential to keep the plan 'alive.'|Ch 1: Process`;
 
-function parseData(raw) {
-    if (!raw || raw.includes("PASTE SET")) return [];
-    // Regex /\r?\n/ splits by either Windows (\r\n) or Mac/Unix (\n) line endings
-    return raw.trim().split(/\r?\n/).filter(line => line.includes('|')).map(line => {
-        const parts = line.split('|');
-        if (parts.length < 7) return null;
-        const [q, a, b, c, d, correct, exp, ref] = parts;
-        return { q, options: [a, b, c, d], correct: parseInt(correct), exp, ref: ref || "CSI Textbook" };
-    }).filter(x => x !== null);
+
+function parse(raw) {
+    return raw.trim().split('\n').filter(l => l.includes('|')).map(l => {
+        const [q, a, b, c, d, corr, exp, ref] = l.split('|');
+        return { q, options: [a,b,c,d], corr: parseInt(corr), exp, ref };
+    });
 }
 
-// --- APP LOGIC ---
-const allData = { 1: parseData(set1Raw), 2: parseData(set2Raw), 3: parseData(set3Raw) };
-let activeSet = null; let quizData = []; let currentIdx = 0; let score = 0; let answers = [];
+const sets = { 1: parse(set1Raw), 2: parse(set2Raw), 3: parse(set3Raw) };
+let currentQ = []; let idx = 0; let score = 0; let answers = []; let examMode = false; let timeRemaining = 10800; // 3 hours
 
-function startSet(setNum) {
-    activeSet = setNum;
-    if (allData[setNum].length === 0) { alert("Set " + setNum + " is empty! Please paste the questions in the code."); return; }
-    const saved = localStorage.getItem('fp1_v3_set_' + setNum);
-    if (saved) {
-        const state = JSON.parse(saved);
-        quizData = state.quizData; currentIdx = state.currentIdx; score = state.score; answers = state.answers;
-    } else {
-        quizData = [...allData[setNum]].sort(() => Math.random() - 0.5);
-        currentIdx = 0; score = 0; answers = []; saveState();
-    }
+function startSet(n) {
+    currentQ = [...sets[n]].sort(() => Math.random() - 0.5);
+    examMode = false; launch();
+}
+
+function startExam() {
+    // Combine all questions and take 80 at random
+    currentQ = [...sets[1], ...sets[2], ...sets[3]].sort(() => Math.random() - 0.5).slice(0, 80);
+    examMode = true;
+    document.getElementById("timer-container").classList.remove("d-none");
+    document.getElementById("timer-text").classList.remove("d-none");
+    launch();
+    startTimer();
+}
+
+function launch() {
+    idx = 0; score = 0; answers = [];
     document.getElementById("selection-ui").classList.add("d-none");
     document.getElementById("quiz-ui").classList.remove("d-none");
-    showQuestion();
+    showQ();
 }
 
-function showQuestion() {
-    const data = quizData[currentIdx];
-    document.getElementById("q-count").innerText = "Question " + (currentIdx + 1) + " of " + quizData.length;
-    document.getElementById("question").innerText = data.q;
-    document.getElementById("progress-bar").style.width = ((currentIdx / quizData.length) * 100) + "%";
-    document.getElementById("info-trigger").onclick = () => alert("Study Ref: " + data.ref);
-    const box = document.getElementById("options"); box.innerHTML = "";
+function showQ() {
+    const data = currentQ[idx];
+    document.getElementById("q-meta").innerText = `Question ${idx + 1} of ${currentQ.length}`;
+    document.getElementById("question-text").innerText = data.q;
+    document.getElementById("mode-text").innerText = examMode ? "Exam Simulation" : "Practice Mode";
+    const container = document.getElementById("options-container"); container.innerHTML = "";
+    
     data.options.forEach((opt, i) => {
-        const btn = document.createElement("button"); btn.className = "btn-option"; btn.innerText = opt;
+        const btn = document.createElement("button"); btn.className = "option-box"; btn.innerText = opt;
         btn.onclick = () => select(i, btn);
-        if (answers[currentIdx] !== undefined) {
+        if (answers[idx] !== undefined) {
             btn.disabled = true;
-            if (i === data.correct) btn.classList.add("correct");
-            if (i === answers[currentIdx] && i !== data.correct) btn.classList.add("wrong");
+            if (i === data.corr) btn.classList.add("correct");
+            if (i === answers[idx] && i !== data.corr) btn.classList.add("wrong");
         }
-        box.appendChild(btn);
+        container.appendChild(btn);
     });
-    if (answers[currentIdx] !== undefined) {
-        const fb = document.getElementById("feedback"); fb.classList.remove("d-none", "alert-success", "alert-danger");
-        fb.classList.add(answers[currentIdx] === data.correct ? "alert-success" : "alert-danger");
-        fb.innerHTML = "<strong>" + (answers[currentIdx] === data.correct ? 'Correct!' : 'Incorrect') + "</strong><br><small>" + data.exp + "</small>";
+    
+    const fb = document.getElementById("feedback");
+    if (answers[idx] !== undefined) {
+        fb.classList.remove("d-none"); fb.className = "mt-3 p-3 rounded-4 border " + (answers[idx] === data.corr ? "alert-success" : "alert-danger");
+        fb.innerHTML = `<b>${answers[idx] === data.corr ? 'Correct!' : 'Incorrect'}</b><br><small>${data.exp}</small>`;
         document.getElementById("next-btn").classList.remove("d-none");
-    } else { document.getElementById("feedback").classList.add("d-none"); document.getElementById("next-btn").classList.add("d-none"); }
+    } else { fb.classList.add("d-none"); document.getElementById("next-btn").classList.add("d-none"); }
+    document.getElementById("back-btn").disabled = idx === 0;
 }
 
-function select(idx, btn) {
-    if (answers[currentIdx] !== undefined) return;
-    answers[currentIdx] = idx; if (idx === quizData[currentIdx].correct) score++;
-    saveState(); showQuestion();
+function select(i, btn) {
+    if (answers[idx] !== undefined) return;
+    answers[idx] = i; if (i === currentQ[idx].corr) score++;
+    showQ();
 }
 
-function nextQuestion() {
-    if (currentIdx < quizData.length - 1) { currentIdx++; saveState(); showQuestion(); }
-    else { document.getElementById("quiz-ui").classList.add("d-none"); document.getElementById("result-ui").classList.remove("d-none");
-           document.getElementById("score-text").innerText = score + " / " + quizData.length; }
+function nextQ() { 
+    if (idx < currentQ.length - 1) { idx++; showQ(); } 
+    else { finishExam(); }
+}
+function prevQ() { if (idx > 0) { idx--; showQ(); } }
+
+function startTimer() {
+    const interval = setInterval(() => {
+        timeRemaining--;
+        let h = Math.floor(timeRemaining/3600); let m = Math.floor((timeRemaining%3600)/60); let s = timeRemaining%60;
+        document.getElementById("timer-text").innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        document.getElementById("timer-fill").style.width = (timeRemaining/10800)*100 + "%";
+        if (timeRemaining <= 0) { clearInterval(interval); finishExam(); }
+        if (!examMode) clearInterval(interval);
+    }, 1000);
 }
 
-function prevQuestion() { if (currentIdx > 0) { currentIdx--; showQuestion(); } }
-function goHome() { document.getElementById("selection-ui").classList.remove("d-none"); document.getElementById("quiz-ui").classList.add("d-none"); updateMenu(); }
-function saveState() { localStorage.setItem('fp1_v3_set_' + activeSet, JSON.stringify({ quizData, currentIdx, score, answers })); }
-function resetCurrentSet() { if (confirm("Redo this set?")) { localStorage.removeItem('fp1_v3_set_' + activeSet); startSet(activeSet); } }
-function resetAll() { if (confirm("Wipe all progress?")) { localStorage.clear(); location.reload(); } }
-
-function updateMenu() {
-    [1,2,3].forEach(n => {
-        const s = localStorage.getItem('fp1_v3_set_' + n);
-        if (s) { const state = JSON.parse(s); const p = Math.round((state.answers.filter(x => x !== undefined).length / state.quizData.length) * 100);
-                 document.getElementById("progress-" + n).innerText = p + "% Done"; }
-    });
+function finishExam() {
+    document.getElementById("quiz-ui").classList.add("d-none");
+    document.getElementById("result-ui").classList.remove("d-none");
+    document.getElementById("score-text").innerText = Math.round((score/currentQ.length)*100) + "%";
 }
-updateMenu();
+
+function showHint() { alert("Reference: " + currentQ[idx].ref); }
+
+// --- CALCULATOR ---
+function toggleCalc() { const c = document.getElementById("calculator"); c.style.display = c.style.display === "block" ? "none" : "block"; }
+function calcInput(v) { document.getElementById("calc-display").value += v; }
+function calcClear() { document.getElementById("calc-display").value = ""; }
+function calcEval() { try { document.getElementById("calc-display").value = eval(document.getElementById("calc-display").value); } catch(e) { calcClear(); } }
 </script>
 </body>
 </html>
