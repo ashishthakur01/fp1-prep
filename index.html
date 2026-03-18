@@ -3,410 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FP1 Exam Pro 2026</title>
+    <title>CSI FP1 Master 2026</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <script src="questions.js"></script>
+
     <style>
-        :root { --primary: #0f172a; --accent: #3b82f6; --success: #10b981; --danger: #f43f5e; --bg: #f1f5f9; }
-        body { background: var(--bg); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; color: #334155; }
+        :root { --primary: #0f172a; --accent: #3b82f6; --success: #10b981; --danger: #f43f5e; --bg: #f8fafc; }
+        body { background: var(--bg); font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #334155; -webkit-user-select: none; user-select: none; }
         .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; padding: 15px; }
         
-        /* Modern Card Interface */
-        .glass-card { background: white; border-radius: 28px; padding: 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.7); }
+        /* Premium Card UI */
+        .main-card { background: white; border-radius: 30px; padding: 25px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; flex-grow: 1; display: flex; flex-direction: column; }
         
-        /* Timer Bar */
-        #timer-container { height: 4px; background: #e2e8f0; border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
-        #timer-fill { height: 100%; background: var(--accent); width: 100%; transition: width 1s linear; }
-        
-        /* Options */
-        .option-box { width: 100%; text-align: left; margin-bottom: 12px; padding: 18px; border: 2px solid #f1f5f9; border-radius: 20px; background: white; transition: 0.2s; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; }
-        .option-box:hover { border-color: var(--accent); background: #f0f7ff; }
+        /* Progress & Timer */
+        .progress-container { height: 6px; background: #e2e8f0; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; }
+        #timer-text { font-family: monospace; font-weight: bold; font-size: 1.1rem; }
+
+        /* Option Buttons */
+        .option-btn { width: 100%; text-align: left; margin-bottom: 12px; padding: 18px; border: 2px solid #f1f5f9; border-radius: 20px; background: white; transition: 0.2s; font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between; }
+        .option-btn:hover:not(:disabled) { border-color: var(--accent); background: #f0f7ff; }
         .correct { background: #dcfce7 !important; border-color: var(--success) !important; color: #166534; font-weight: 600; }
         .wrong { background: #fee2e2 !important; border-color: var(--danger) !important; color: #991b1b; }
-        
-        /* Floating Calculator Toggle */
-        .calc-toggle { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px rgba(0,0,0,0.2); z-index: 1000; cursor: pointer; }
-        #calculator { display: none; position: fixed; bottom: 80px; right: 20px; width: 250px; background: white; border-radius: 20px; box-shadow: 0 20px 25px rgba(0,0,0,0.1); padding: 15px; z-index: 1000; }
+
+        /* Set Selection Buttons */
+        .set-card { width: 100%; padding: 20px; border: 2px solid #f1f5f9; border-radius: 20px; background: white; text-align: left; margin-bottom: 12px; transition: 0.2s; position: relative; }
+        .set-card:active { transform: scale(0.98); }
+        .badge-score { position: absolute; right: 20px; top: 20px; font-size: 0.75rem; }
+
+        /* Floating Calculator */
+        .calc-fab { position: fixed; bottom: 25px; right: 25px; width: 55px; height: 55px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px rgba(0,0,0,0.2); z-index: 1000; cursor: pointer; }
+        #calc-widget { display: none; position: fixed; bottom: 90px; right: 20px; width: 260px; background: white; border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); padding: 20px; z-index: 1000; border: 1px solid #e2e8f0; }
+        .calc-btn { height: 45px; border-radius: 12px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <div id="selection-ui" class="glass-card text-center my-auto">
-        <h1 class="fw-bold mb-1">FP1 Master</h1>
-        <p class="text-muted small mb-4">Practice Sets & Full Exam Simulation</p>
-        
-        <div class="d-grid gap-3">
-            <button class="btn btn-primary py-3 rounded-4 fw-bold" onclick="startExam()">
-                <i class="bi bi-stopwatch me-2"></i> Start 3-Hour Simulated Exam
-            </button>
-            <hr class="my-2">
-            <button class="btn btn-outline-secondary py-3 rounded-4" onclick="startSet(1)">Set 1: Foundations</button>
-            <button class="btn btn-outline-secondary py-3 rounded-4" onclick="startSet(2)">Set 2: Math & Tax</button>
-            <button class="btn btn-outline-secondary py-3 rounded-4" onclick="startSet(3)">Set 3: Advanced Cases</button>
+    <div id="selection-ui" class="main-card my-auto">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold mb-0">CSI Master</h2>
+            <p class="text-muted small">FP1 Prep • 2026 Technical Standards</p>
         </div>
         
-        <div class="mt-4 text-center">
-            <small class="text-danger" style="cursor:pointer" onclick="resetAll()">Reset All Progress</small>
+        <div class="d-grid gap-2">
+            <button class="btn btn-primary py-3 rounded-4 fw-bold shadow-sm mb-2" onclick="startExam()">
+                <i class="bi bi-stopwatch-fill me-2"></i> 3-Hour Exam Simulation
+            </button>
+            
+            <p class="text-muted small fw-bold mt-2 mb-2">PRACTICE SETS</p>
+            <button class="set-card" onclick="startSet(1)">
+                <span class="badge bg-light text-dark badge-score" id="stat-1">0%</span>
+                <div class="fw-bold">Set 1: Foundations</div>
+                <small class="text-muted">Ethics, Process & Theory</small>
+            </button>
+            <button class="set-card" onclick="startSet(2)">
+                <span class="badge bg-light text-dark badge-score" id="stat-2">0%</span>
+                <div class="fw-bold">Set 2: Technical Math</div>
+                <small class="text-muted">Tax, Mortgages & TVM</small>
+            </button>
+            <button class="set-card" onclick="startSet(3)">
+                <span class="badge bg-light text-dark badge-score" id="stat-3">0%</span>
+                <div class="fw-bold">Set 3: Advanced Cases</div>
+                <small class="text-muted">Estate & Insurance Scenarios</small>
+            </button>
+        </div>
+
+        <div class="mt-auto text-center pt-4">
+            <small class="text-danger opacity-50" style="cursor:pointer" onclick="resetAll()">Clear All Progress</small>
         </div>
     </div>
 
-    <div id="quiz-ui" class="d-none glass-card">
-        <div id="timer-container" class="d-none">
-            <div id="timer-fill"></div>
-        </div>
-        
+    <div id="quiz-ui" class="d-none main-card">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <span class="fw-bold text-muted" id="mode-text">Practice Set</span>
-            <span id="timer-text" class="badge bg-dark rounded-pill d-none">03:00:00</span>
-            <i class="bi bi-info-circle" style="cursor:pointer" onclick="showHint()"></i>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="goHome()">
+                <i class="bi bi-x-lg"></i> Exit
+            </button>
+            <div id="timer-text" class="text-danger d-none">03:00:00</div>
+            <i class="bi bi-info-circle-fill text-muted fs-4" style="cursor:pointer" onclick="showHint()"></i>
         </div>
 
-        <div id="q-meta" class="small text-muted mb-2">Q 1/80</div>
-        <h5 id="question-text" class="fw-bold mb-4"></h5>
-        
-        <div id="options-container"></div>
-        
-        <div id="feedback" class="mt-3 p-3 rounded-4 d-none"></div>
+        <div class="progress-container">
+            <div id="progress-fill" class="progress-fill"></div>
+        </div>
 
-        <div class="d-flex gap-2 mt-4">
+        <div class="d-flex justify-content-between small text-muted mb-3">
+            <span id="mode-label">Practice Mode</span>
+            <span id="q-counter">Q 1/70</span>
+        </div>
+
+        <div class="flex-grow-1">
+            <h5 id="question-text" class="fw-bold mb-4" style="line-height: 1.5;"></h5>
+            <div id="options-box"></div>
+        </div>
+
+        <div id="feedback" class="mt-3 p-3 rounded-4 border d-none"></div>
+
+        <div class="nav-buttons mt-4 d-flex gap-2">
             <button id="back-btn" class="btn btn-light py-3 rounded-4 flex-grow-1" onclick="prevQ()">Back</button>
             <button id="next-btn" class="btn btn-primary py-3 rounded-4 flex-grow-1 d-none" onclick="nextQ()">Next</button>
         </div>
     </div>
 
-    <div id="result-ui" class="d-none glass-card text-center my-auto">
-        <div class="fs-1 mb-2">🎓</div>
-        <h2 class="fw-bold">Exam Complete</h2>
-        <h1 id="score-text" class="display-2 fw-bold text-primary my-4"></h1>
-        <p id="time-spent" class="text-muted mb-4"></p>
-        <button class="btn btn-dark w-100 py-3 rounded-pill" onclick="location.reload()">Return Home</button>
+    <div id="result-ui" class="d-none main-card text-center my-auto">
+        <div class="display-1 mb-3">🎉</div>
+        <h2 class="fw-bold">Session Complete</h2>
+        <h1 id="final-score" class="display-2 fw-bold text-primary my-4">0%</h1>
+        <p class="text-muted mb-5" id="result-msg"></p>
+        <button class="btn btn-dark w-100 py-3 rounded-pill" onclick="goHome()">Return to Menu</button>
     </div>
 </div>
 
-<div class="calc-toggle" onclick="toggleCalc()"><i class="bi bi-calculator"></i></div>
-<div id="calculator">
-    <input type="text" id="calc-display" class="form-control mb-2 text-end fs-4" readonly>
-    <div class="row g-1">
-        <div class="col-3"><button class="btn btn-light w-100" onclick="calcInput('7')">7</button></div>
-        <div class="col-3"><button class="btn btn-light w-100" onclick="calcInput('8')">8</button></div>
-        <div class="col-3"><button class="btn btn-light w-100" onclick="calcInput('9')">9</button></div>
-        <div class="col-3"><button class="btn btn-warning w-100" onclick="calcInput('/')">/</button></div>
-        <div class="col-6"><button class="btn btn-danger w-100" onclick="calcClear()">C</button></div>
-        <div class="col-6"><button class="btn btn-success w-100" onclick="calcEval()">=</button></div>
+<div class="calc-fab" onclick="toggleCalc()"><i class="bi bi-calculator"></i></div>
+<div id="calc-widget">
+    <input type="text" id="calc-screen" class="form-control mb-3 text-end fs-4 fw-bold py-2" readonly placeholder="0">
+    <div class="row g-2">
+        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('7')">7</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('8')">8</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('9')">9</button></div>
+        <div class="col-3"><button class="btn btn-warning w-100 calc-btn" onclick="cIn('/')">÷</button></div>
+        
+        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('4')">4</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('5')">5</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('6')">6</button></div>
+        <div class="col-3"><button class="btn btn-warning w-100 calc-btn" onclick="cIn('*')">×</button></div>
+        
+        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('1')">1</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('2')">2</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('3')">3</button></div>
+        <div class="col-3"><button class="btn btn-warning w-100 calc-btn" onclick="cIn('-')">-</button></div>
+        
+        <div class="col-3"><button class="btn btn-danger w-100 calc-btn" onclick="cClr()">C</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('0')">0</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('.')">.</button></div>
+        <div class="col-3"><button class="btn btn-warning w-100 calc-btn" onclick="cIn('+')">+</button></div>
+        
+        <div class="col-12"><button class="btn btn-success w-100 calc-btn" onclick="cRes()">=</button></div>
     </div>
 </div>
 
 <script>
-// --- DATA TABLES ---
-const set1Raw = `Which principle requires an advisor to be honest and put the client's interests first?|Objectivity|Integrity|Professionalism|Confidentiality|1|Integrity is the bedrock of the client-advisor relationship.|Ch 11: Ethics
-During the 'Gathering' phase, you discover a client has no Will. What is your next action?|Draft a will for them|Note it as a gap in the analysis phase|Tell them it doesn't matter yet|Ask them for their tax return instead|1|Identifying missing documents is part of the Analysis phase gap check.|Ch 1: Process
-A client earns $60k salary and $5k in eligible dividends. What is the dividend gross-up rate?|15%|38%|50%|100%|1|Eligible dividends are grossed up by 38% for tax purposes.|Ch 4: Taxation
-What is the standard GDS limit?|28%|32%|40%|44%|1|Gross Debt Service (housing only) is capped at 32%.|Ch 2: Budgeting
-Who bears the risk in a Defined Contribution plan?|The Employer|The Government|The Employee|The Insurance Co|2|In DC plans, the payout depends on the employee's investment choices.|Ch 8: Retirement
-What is 'Intestacy'?|Dying with a will|Dying without a will|Dying with debt|Dying in a foreign country|1|Intestacy means provincial law decides asset distribution.|Ch 10: Estate
-Which step comes after 'Developing' recommendations?|Gathering|Analyzing|Implementing|Monitoring|2|Once the plan is developed, it must be implemented (Action).|Ch 1: Process
-How much of a capital gain is taxable?|25%|50%|75%|100%|1|The current inclusion rate is 50%.|Ch 4: Taxation
-Which document appoints a guardian for minor children?|Power of Attorney|Codicil|Last Will and Testament|Living Will|2|Guardianship is a primary function of the Will.|Ch 10: Estate
-What is the primary objective of 'Monitoring' a plan?|To sell more products|To collect new fees|To ensure the plan stays aligned with life changes|To update the client's address|2|Life changes (marriage, birth, job loss) require plan adjustments.|Ch 1: Process
-Which of these is a 'Fixed' expense?|Grocery bill|Entertainment|Mortgage payment|Clothing|2|Fixed expenses stay constant month-to-month.|Ch 2: Budgeting
-What does 'Net Worth' represent?|Annual income|Monthly savings|Total Assets minus Total Liabilities|Total cash in the bank|2|Net worth is a snapshot of total wealth.|Ch 2: Budgeting
-Which credit product usually has the lowest interest rate?|Credit Card|Unsecured Line of Credit|Mortgage|Payday Loan|2|Mortgages are secured by property, reducing risk for the lender.|Ch 3: Mortgages
-What is 'Amortization'?|The length of the mortgage contract|The interest rate type|The total time to pay off the loan fully|The down payment amount|2|Amortization is the total life of the loan (e.g., 25 years).|Ch 3: Mortgages
-Which organization protects bank deposits in Canada?|CMHC|CDIC|OSFI|CRA|1|CDIC insures deposits up to $100,000 per category.|Ch 12: Regulation
-Which tax credit is 'Non-Refundable'?|Working Income Tax Benefit|Basic Personal Amount|GST/HST Credit|Child Tax Benefit|1|Non-refundable credits reduce tax owed but don't pay out a refund.|Ch 4: Taxation
-At what age must RRSP contributions end?|65|69|71|75|2|The account must be converted or closed by Dec 31 of age 71.|Ch 8: Retirement
-What is 'Liquidity'?|The return on an investment|The risk of an investment|The ease of converting an asset to cash|The tax rate on an asset|2|Cash is perfectly liquid; real estate is illiquid.|Ch 7: Investments
-Which insurance covers a lump sum upon diagnosis of a major illness?|Life Insurance|Disability Insurance|Critical Illness Insurance|Long-term Care|2|Critical illness pays upon survival of a diagnosis.|Ch 9: Risk
-What is a 'Codicil'?|A new Will|A legal amendment to an existing Will|A type of trust|A funeral instruction|1|Codicils allow small changes without rewriting the whole Will.|Ch 10: Estate
-Which regulatory body oversees the conduct of investment dealers?|CRA|CIRO|Bank of Canada|Ministry of Finance|1|CIRO (formerly IIROC/MFDA) handles advisor conduct.|Ch 12: Regulation
-Which of the following is 'Quantitative' data?|Retirement dreams|Risk tolerance level|Mortgage balance of $345,000|Preferred lifestyle in 10 years|2|Quantitative data is measurable and numerical.|Ch 1: Process
-A client is 30. What is the 'Time Horizon' for their retirement at 65?|10 years|30 years|35 years|65 years|2|65 minus 30 equals 35 years.|Ch 7: Investments
-What is 'Systematic' risk?|Risk of a single company failing|Risk that affects the entire market|Risk of a bank error|Risk of losing a job|1|Market risk cannot be diversified away.|Ch 7: Investments
-Which investment is most suitable for an emergency fund?|Common stocks|Gold bullion|High-interest savings account|Real estate|2|Safety and liquidity are key for emergency funds.|Ch 2: Budgeting
-What is 'OAS' clawback?|A fee for starting OAS early|Reduction of benefits for high-income earners|A tax on private pensions|A bank charge|1|The Recovery Tax applies when income exceeds a threshold.|Ch 8: Retirement
-Which document covers financial decisions if a client is incapacitated?|Power of Attorney for Property|Living Will|Codicil|Executor Appointment|0|Property POA handles money and assets while alive.|Ch 10: Estate
-How many steps are in the standard Financial Planning process?|3|4|5|6|3|The steps are: Establish, Gather, Analyze, Develop, Implement, Monitor.|Ch 1: Process
-What is a 'Defined Benefit' pension?|Payout depends on market performance|Payout is a guaranteed formula based on salary/years|Employee chooses the investments|Employer can stop payments at any time|1|DB plans provide a predictable monthly income.|Ch 8: Retirement
-Which of the following is a 'Tax Deduction'?|Charitable donation|Medical expenses|RRSP contribution|Tuition fees|2|RRSP contributions reduce taxable income directly.|Ch 4: Taxation
-What is 'Probate'?|A tax on income|The legal process to validate a Will|An insurance premium|A retirement strategy|1|Probate is the court's confirmation of the Will's validity.|Ch 10: Estate
-Which stage involves defining the advisor's compensation?|Gathering|Analysis|Establishing the Relationship|Implementation|2|Fee disclosure must happen at the very start.|Ch 1: Process
-What is 'Diversification'?|Investing in only one sector|Buying only government bonds|Spreading investments across different asset classes|Keeping all money in cash|2|Diversification reduces unsystematic risk.|Ch 7: Investments
-A client's 'Risk Tolerance' is primarily:|Mathematical|Psychological|Financial|Legal|1|Tolerance is about the client's emotional comfort with loss.|Ch 7: Investments
-Which document is used for 'Advance Directives' in healthcare?|Will|Property POA|Personal Care POA / Living Will|Trust|2|It outlines medical wishes if the client cannot speak.|Ch 10: Estate
-What is the standard 'Stress Test' for mortgages?|Fixed 5.25%|Contract rate minus 1%|Greater of 5.25% or contract + 2%|Variable rate only|2|The stress test protects against rising interest rates.|Ch 3: Mortgages
-Which tax is paid on the gain of a sold investment?|Income Tax|Sales Tax|Capital Gains Tax|Property Tax|2|Only 50% of the gain is subject to tax.|Ch 4: Taxation
-What is a 'LIRA'?|A savings account for cars|A Locked-in Retirement Account|A government grant|A type of mortgage|1|LIRAs hold pension funds from previous employers.|Ch 8: Retirement
-What does 'FCAC' stand for?|Financial Consumer Agency of Canada|Federal Canadian Asset Committee|Financial Choice and Credit|Fixed Cost Accounting Canada|0|The FCAC protects consumers of financial products.|Ch 12: Regulation
-Which life insurance has the lowest initial premium?|Whole Life|Universal Life|Term Life|Term-to-100|2|Term insurance is the cheapest form of pure protection.|Ch 9: Risk
-What is 'Universal Life' insurance?|Temporary insurance|Permanent insurance with an investment component|Government-provided life insurance|Insurance for travel only|1|UL combines a death benefit with a tax-advantaged account.|Ch 9: Risk
-Which principle prohibits sharing client data with third parties?|Integrity|Objectivity|Confidentiality|Diligence|2|Client privacy is a legal and ethical requirement.|Ch 11: Ethics
-What is 'Default' risk?|Risk that the market will drop|Risk that a borrower won't pay back a loan|Risk of inflation|Risk of a lower interest rate|1|Default risk is common in bonds and consumer lending.|Ch 7: Investments
-Which plan provides a 20% grant from the government?|RRSP|TFSA|RESP|RRIF|2|The CESG grant applies to education savings.|Ch 7: Investments
-What is 'Gross Income'?|Income after taxes|Income before taxes and deductions|Income including only bonuses|Income from investments only|1|Gross income is the total 'top line' earnings.|Ch 2: Budgeting
-What is 'Attribution' in tax law?|Giving credit to an advisor|Taxing income in the donor's hands instead of the receiver|Assigning a Will to an executor|The date a tax return is filed|1|It prevents tax-shifting to lower-income family members.|Ch 4: Taxation
-Which document is required to claim the Disability Tax Credit?|T1 Return|T2201 Form|T4 Slip|Marriage Certificate|1|A medical practitioner must certify the T2201.|Ch 4: Taxation
-What is 'Title Insurance'?|Insurance against fire|Insurance against defects in property ownership|Insurance for the bank only|Insurance for the car|1|It protects against liens or fraud related to property title.|Ch 3: Mortgages
-Which stage of the economy has high growth and rising prices?|Trough|Contraction|Expansion|Peak|2|Expansion is the growth phase of the business cycle.|Ch 2: Economics
-What is a 'Variable' interest rate?|A rate that never changes|A rate tied to the bank's Prime rate|A rate chosen by the client every month|A rate for RRSPs only|1|Variable rates fluctuate with market conditions.|Ch 3: Mortgages
-What is 'Equity' in a home?|The original price paid|The current market value minus the mortgage|The interest paid to date|The value of the furniture|1|Equity is the 'owned' value of the property.|Ch 3: Mortgages
-Which is a 'Discretionary' expense?|Utility bills|Property tax|Vacation travel|Car insurance|2|Discretionary expenses are optional lifestyle choices.|Ch 2: Budgeting
-What is 'Inflation'?|A decrease in prices|An increase in the value of the dollar|The general increase in prices over time|A rise in stock market volume|2|Inflation reduces the purchasing power of money.|Ch 2: Economics
-Which insurance is most critical during working years?|Life Insurance|Disability Insurance|Funeral Insurance|Critical Illness|1|Protecting the ability to earn an income is foundational.|Ch 9: Risk
-Who is a 'Beneficiary'?|The person who buys the policy|The person whose life is insured|The person who receives the funds upon death|The insurance company|2|Beneficiaries are named in Wills or insurance policies.|Ch 10: Estate
-What is the 'Rule of 72' result for a 6% return?|6 years|10 years|12 years|72 years|2|72 divided by 6 equals 12.|Ch 5: Math
-What is 'Fiscal Policy'?|Interest rates set by the bank|Government spending and taxation|Rules for stock trading|A type of life insurance|1|The government uses fiscal policy to influence the economy.|Ch 2: Economics
-Which step involves identifying 'gaps' in the plan?|Gathering|Analysis|Develop|Implement|1|Analysis compares 'what is' to 'what is needed.'|Ch 1: Process
-What is 'Real' rate of return?|Return after taxes|Return after inflation|The rate the bank promises|Return including commissions|1|Real return = Nominal Return - Inflation.|Ch 5: Math
-Which of these is 'Illiquid'?|Cash|Money Market Fund|Commercial Real Estate|Publicly traded stocks|2|Real estate takes time and cost to sell.|Ch 7: Investments
-What is 'Joint Tenancy'?|Renting an apartment together|Ownership where the survivor automatically gets the asset|A business partnership|A type of trust|1|JTWROS allows assets to bypass the Will.|Ch 10: Estate
-Which organization oversees the 'Do Not Call' list?|FCAC|CRTC|CRA|OSFI|1|The CRTC regulates telemarketing and privacy.|Ch 12: Regulation
-What is 'Suitability'?|Giving the client what they want|Matching products to client risk and goals|Offering the cheapest product|Working for a reputable firm|1|Suitability is a legal requirement for all advisors.|Ch 11: Ethics
-What is 'Churning'?|Adding money to an account|Excessive trading to generate commissions|Mixing client and firm funds|Not meeting with a client for a year|1|Churning is an ethical violation.|Ch 11: Ethics
-Which retirement income is NOT taxable?|CPP|OAS|TFSA Withdrawals|RRIF Withdrawals|2|TFSA withdrawals are 100% tax-free.|Ch 8: Retirement
-What is the 'Execution' of a Will?|Writing the Will|The formal signing and witnessing of the document|Carrying out the instructions|Reading the Will to the family|1|A Will must be properly executed to be valid.|Ch 10: Estate
-Which ratio includes car loans and credit card payments?|GDS|TDS|LTV|Current Ratio|1|Total Debt Service covers all monthly debt obligations.|Ch 2: Budgeting
-What is 'Monetary Policy'?|Tax rates|Interest rates and money supply set by the Bank of Canada|Corporate law|International trade|1|Monetary policy manages inflation and currency.|Ch 2: Economics
-Which stage of the planning process is 'ongoing'?|Gathering|Analysis|Develop|Monitoring|3|Monitoring is a continuous loop.|Ch 1: Process
-What is 'Integrity' in the Code of Ethics?|Being smart|Working long hours|Honesty and placing client interests first|Having a degree|2|Integrity is the most fundamental ethical requirement.|Ch 11: Ethics`;
-
-const set2Raw = `A client has a gross monthly income of $6,000. Their mortgage payment, property taxes, and heating (PITH) total $1,800. What is their GDS ratio?|25%|30%|35%|40%|1|GDS = (PITH / Gross Income). $1,800 / $6,000 = 30%.|Ch 2: Budgeting
-A client earns $90,000. Their PITH is $2,100/month and they have a $400/month car loan. What is their TDS ratio?|28%|33%|38%|42%|1|TDS = (PITH + Other Debts) / Gross Income. ($2,100 + $400) / $7,500 = 33.3%.|Ch 2: Budgeting
-What is the saving on a $12,000 RRSP contribution for a client with a 43% marginal tax rate?|$4,300|$5,160|$6,000|$12,000|1|Tax saving = Contribution x Marginal Rate. $12,000 x 0.43 = $5,160.|Ch 4: Taxation
-If a client needs $60,000 for a down payment in 4 years and can earn 5% compounded annually, what is the PV?|$45,000|$49,362|$51,000|$57,142|1|PV = FV / (1+i)^n. $60,000 / (1.05)^4 = $49,362.10.|Ch 5: Math
-An investment of $25,000 grows to $50,000 in 6 years. Using the Rule of 72, what is the approximate annual return?|6%|8%|10%|12%|3|72 / 6 years = 12%.|Ch 5: Math
-A house is purchased for $550,000 with a $50,000 down payment. What is the Loan-to-Value (LTV) ratio?|9%|82%|91%|95%|2|LTV = Loan ($500k) / Value ($550k) = 90.9%.|Ch 3: Mortgages
-A client in a 30% tax bracket receives $1,000 in Canadian eligible dividends. What is the 'Gross-up' amount?|$150|$380|$500|$1,000|1|Eligible dividends are grossed up by 38%. $1,000 x 0.38 = $380.|Ch 4: Taxation
-If the nominal interest rate is 6% and inflation is 2%, what is the approximate 'Real' rate of return?|3%|4%|8%|12%|1|Real Rate = Nominal - Inflation (6% - 2% = 4%).|Ch 5: Math
-A client earns $100,000/year. Their employer matches 5% of salary into a DC Pension. What is the 'Pension Adjustment' (PA)?|$2,500|$5,000|$10,000|$18,000|2|The PA is the total contribution (Employer $5k + Employee $5k = $10k).|Ch 8: Retirement
-If a client takes CPP at age 60 instead of 65, what is the total percentage reduction?|18%|30%|36%|42%|2|Reduction is 0.6% per month for 60 months (0.6 x 60 = 36%).|Ch 8: Retirement
-What is the 'Future Value' of $5,000 invested today at 6% compounded annually for 5 years?|$6,500|$6,691|$7,000|$7,522|1|FV = PV x (1+i)^n. $5,000 x (1.06)^5 = $6,691.13.|Ch 5: Math
-A client has a $400,000 mortgage at 4%. If they double their monthly payment of $2,100, what happens to the amortization?|It stays the same|It increases|It decreases significantly|It resets to 25 years|2|Extra principal payments reduce the total life of the loan.|Ch 3: Mortgages
-A client earns $80,000. They have $10,000 in capital gains. What is their taxable income?|$80,000|$85,000|$90,000|$100,000|1|Taxable = Salary + (50% of Capital Gain). $80k + $5k = $85k.|Ch 4: Taxation
-An investor buys a bond for $950 and sells it for $1,050 one year later. What is the 'Capital Gain'?|$50|$100|$1,000|$1,050|1|Gain = Sell Price - Buy Price ($1050 - $950 = $100).|Ch 7: Investments
-Using the 'Capitalization of Income' method, how much insurance is needed to replace $50,000 income at 4%?|$1,000,000|$1,250,000|$1,500,000|$2,000,000|1|Insurance = Income / Rate. $50,000 / 0.04 = $1,250,000.|Ch 9: Risk
-What is the 'Stress Test' qualifying rate for a mortgage with a 3% contract rate?|3%|5%|5.25%|6%|2|Greater of 5.25% or contract + 2% (3+2=5). 5.25% is higher.|Ch 3: Mortgages
-A client has $200k in assets and $150k in liabilities. What is their Net Worth?|$50,000|$150,000|$200,000|$350,000|0|Assets - Liabilities = Net Worth.|Ch 2: Budgeting
-If a client earns $2,000 in bank interest, how much is added to their taxable income?|$0|$1,000|$1,500|$2,000|3|Interest is 100% taxable at the marginal rate.|Ch 4: Taxation
-A client withdraws $4,000 from their TFSA in 2023. How much room is added back in 2024?|$0|$2,000|$4,000|$7,000|2|TFSA withdrawals are added to next year's room.|Ch 7: Investments
-What is the tax saving on a $5,000 RRSP contribution if the marginal rate is 25%?|$500|$1,000|$1,250|$5,000|2|$5,000 x 0.25 = $1,250.|Ch 4: Taxation
-A client needs $1M to retire. They have $400k. If they earn 7%, how many years until they double to $800k?|7 years|10 years|12 years|15 years|1|Rule of 72: 72 / 7 = 10.2 years.|Ch 5: Math
-What is the GDS limit for a mortgage?|30%|32%|40%|44%|1|Standard industry GDS limit is 32%.|Ch 3: Mortgages
-If a client has a $300,000 mortgage and their house is worth $500,000, what is the Equity?|$200,000|$300,000|$500,000|$800,000|0|Value - Debt = Equity.|Ch 3: Mortgages
-A client is 65 and earns $100,000. If the OAS clawback threshold is $90k, how much is clawed back?|$0|$1,500|$10,000|$15,000|1|15% of amount over $90k ($10k x 0.15 = $1,500).|Ch 8: Retirement
-If a client invests $500/month for 3 years at 0% interest, what is the FV?|$6,000|$12,000|$18,000|$24,000|2|$500 x 12 months x 3 years = $18,000.|Ch 5: Math
-Which ratio measures a client's ability to cover short-term debts with cash?|Debt-to-Equity|Current Ratio|GDS|TDS|1|Current Ratio = Current Assets / Current Liabilities.|Ch 2: Budgeting
-A client has $5,000 in monthly expenses. They want a 3-month emergency fund. Total needed?|$5,000|$10,000|$15,000|$20,000|2|$5,000 x 3 = $15,000.|Ch 2: Budgeting
-If a client buys a $400k home with 5% down, what is the mortgage amount before insurance?|$350,000|$380,000|$400,000|$420,000|1|95% of $400k = $380,000.|Ch 3: Mortgages
-What is the tax on a $5,000 capital gain if the tax rate is 40%?|$1,000|$2,000|$2,500|$5,000|0|50% is taxable ($2,500). Tax = $2,500 x 0.40 = $1,000.|Ch 4: Taxation
-A client pays $1,200/month in rent. They want to buy a home with $1,500/month PITH. Impact on cash flow?|+$300|-$300|No change|+$1,200|1|Monthly expenses increase by $300, reducing surplus.|Ch 2: Budgeting
-What is the 'Effective Annual Rate' (EAR) if the nominal rate is 12% compounded monthly?|12%|12.36%|12.68%|13%|2|Compounding monthly yields a higher EAR than nominal.|Ch 5: Math
-A client receives $500 in interest and $500 in capital gains. Total taxable income?|$500|$750|$1,000|$1,500|1|$500 (interest) + $250 (half of gain) = $750.|Ch 4: Taxation
-If a client is 71 and has a $500k RRSP, and the RRIF minimum is 5.28%, what is the withdrawal?|$15,000|$26,400|$30,000|$50,000|1|$500,000 x 0.0528 = $26,400.|Ch 8: Retirement
-A client puts $500/month into an RESP. What is the max annual CESG grant they can receive?|$500|$1,000|$2,500|$5,000|0|The max standard CESG is $500 per year (20% of $2,500).|Ch 7: Investments
-What is the PV of $10,000 in 1 year if interest is 10%?|$9,000|$9,091|$10,000|$11,000|1|$10,000 / 1.10 = $9,090.91.|Ch 5: Math
-A client earns $4,000 gross. Rent is $1,200. Utilities are $200. Car is $400. Food is $600. Surplus?|$1,200|$1,600|$1,800|$2,400|1|$4,000 - (1200+200+400+600) = $1,600.|Ch 2: Budgeting
-How much life insurance is needed to replace $60k income if the discount rate is 6%?|$600,000|$1,000,000|$1,200,000|$2,000,000|1|$60,000 / 0.06 = $1,000,000.|Ch 9: Risk
-If a client earns 8% and inflation is 3%, what is the 'Real' return?|5%|8%|11%|24%|0|8% - 3% = 5%.|Ch 5: Math
-A client buys a $300k home and pays $6k Land Transfer Tax. Total cost at closing?|$294,000|$300,000|$306,000|$310,000|2|Price + Tax = $306,000.|Ch 3: Mortgages
-If a client makes a $20,000 RRSP contribution in a 50% bracket, what is their 'Refund'?|$0|$5,000|$10,000|$20,000|2|$20,000 x 0.50 = $10,000.|Ch 4: Taxation
-Using Rule of 72, how long to double money at 10%?|7.2 years|10 years|12 years|72 years|0|72 / 10 = 7.2.|Ch 5: Math
-A client has $100k cash and $400k house. $200k mortgage. Total Assets?|$100,000|$300,000|$400,000|$500,000|3|Cash ($100k) + House ($400k) = $500k.|Ch 2: Budgeting
-A client pays $15,000 in interest on a mortgage. Is this tax-deductible for a principal residence?|Yes|No|Only if they are seniors|Only for the first 5 years|1|Mortgage interest on a primary home is not deductible in Canada.|Ch 4: Taxation
-If a client withdraws $10,000 from an RRSP, how much is withheld for tax (approx)?|$1,000|$2,000|$3,000|$5,000|1|Withholding tax on $10k is typically 20% ($2,000).|Ch 8: Retirement
-What is the FV of $20,000 in 2 years at 10% compounded annually?|$22,000|$24,000|$24,200|$26,000|2|$20,000 x 1.10 x 1.10 = $24,200.|Ch 5: Math
-A client has $50k in a TFSA. It earns $5k in interest. What is the tax owed?|$0|$500|$1,000|$2,000|0|TFSA growth is tax-free.|Ch 7: Investments
-If a client has a $500 monthly car payment and $5,000 gross monthly income, car-to-income ratio?|5%|10%|15%|20%|1|500 / 5000 = 10%.|Ch 2: Budgeting
-A client buys a $1M home with $200k down. Do they need CMHC insurance?|Yes|No|Only if it's in Toronto|Only if the rate is high|1|20% down payment avoids mandatory insurance.|Ch 3: Mortgages
-What is the taxable portion of a $20,000 capital loss?|$0|$5,000|$10,000|$20,000|2|50% of losses are 'allowable' to offset gains.|Ch 4: Taxation
-A client needs $20,000/year in retirement. If they have $400,000, what return is needed?|2%|5%|8%|10%|1|$20,000 / $400,000 = 5%.|Ch 8: Retirement
-If a client has a $200k mortgage at 5% for 25 years, monthly P&I is $1,163. Total interest in month 1?|$833|$1,000|$1,163|$1,500|0|($200,000 x 0.05) / 12 = $833.33.|Ch 3: Mortgages
-What is the PV of $1,000 in 2 years at 5%?|$900|$907|$950|$1,000|1|$1,000 / (1.05)^2 = $907.03.|Ch 5: Math
-A client earns $6,000 net/month. Expenses are $5,000. Yearly savings?|$1,000|$6,000|$10,000|$12,000|3|$1,000/month surplus x 12 = $12,000.|Ch 2: Budgeting
-If a client pays 40% tax, what is the 'After-tax' return on a 5% GIC?|2%|3%|4%|5%|1|5% x (1 - 0.40) = 3%.|Ch 4: Taxation
-How many years to double money at 4% interest?|12 years|15 years|18 years|24 years|2|72 / 4 = 18.|Ch 5: Math
-A client has a $100k salary. Max RRSP room for next year (ignoring PA)?|$10,000|$18,000|$25,000|$30,000|1|18% of earned income = $18,000.|Ch 8: Retirement
-If a client has $1M and withdraws 4% per year, monthly income?|$3,333|$4,000|$5,000|$40,000|0|($1M x 0.04) / 12 = $3,333.|Ch 8: Retirement
-A client's house is worth $900k. Mortgage is $600k. Debt-to-Value?|33%|50%|66%|75%|2|600 / 900 = 66.6%.|Ch 3: Mortgages
-If a client has a $1,000 tax credit and is in a 40% bracket, total tax saved?|$150|$400|$600|$1,000|0|Non-refundable federal credits are calculated at 15% ($150).|Ch 4: Taxation
-What is the FV of $100/month for 1 year at 0%?|$100|$1,000|$1,100|$1,200|3|$100 x 12 = $1,200.|Ch 5: Math
-A client has $50k in debt at 20% interest. Yearly interest cost?|$1,000|$5,000|$10,000|$20,000|2|$50,000 x 0.20 = $10,000.|Ch 2: Budgeting
-If a client buys a stock at $10 and it goes to $15, what is the % return?|15%|25%|50%|100%|2|(5 / 10) = 50%.|Ch 7: Investments
-What is the TDS limit?|32%|38%|40%|44%|2|Standard industry TDS limit is 40%.|Ch 3: Mortgages
-If a client has $20k in an RRSP and withdraws it all in a 30% bracket, after-tax cash?|$6,000|$10,000|$14,000|$20,000|2|$20,000 x (1 - 0.30) = $14,000.|Ch 8: Retirement
-What is the PV of $5,000 in 3 years at 10%?|$3,756|$4,000|$4,500|$5,000|0|$5,000 / (1.10)^3 = $3,756.57.|Ch 5: Math
-A client has $3,000 gross monthly income. Max PITH they can afford at 32% GDS?|$640|$960|$1,200|$1,500|1|$3,000 x 0.32 = $960.|Ch 3: Mortgages
-How long to double money at 12%?|4 years|6 years|8 years|12 years|1|72 / 12 = 6.|Ch 5: Math
-If a client has $500k and wants it to last 20 years at 0% interest, yearly withdrawal?|$10,000|$25,000|$40,000|$50,000|1|$500,000 / 20 = $25,000.|Ch 8: Retirement
-A client has a $300k mortgage. Interest is 5%. Monthly interest only?|$1,000|$1,250|$1,500|$2,000|1|($300k x 0.05) / 12 = $1,250.|Ch 3: Mortgages
-If a client earns $75,000 and puts $5,000 in RRSP, what is the new taxable income?|$65,000|$70,000|$75,000|$80,000|1|$75,000 - $5,000 = $70,000.|Ch 4: Taxation`;
-const set3Raw = `A couple earns $120k and $40k respectively. Which strategy provides the best immediate tax relief for the household?|Both contribute equally to TFSAs|High-earner contributes to a Spousal RRSP|Low-earner contributes to an RRSP|Both save in a non-registered account|1|Spousal RRSPs allow the high-earner to get the 40%+ tax deduction while splitting income later.|Ch 4: Taxation
-John dies with a $500k RRSP naming his estate as beneficiary. He has $200k in debts. What is the tax implication?|RRSP is tax-free because of debts|Full $500k is taxed as income on his final return|Only $300k is taxed|Tax is deferred until his children retire|1|Registered assets without a surviving spouse beneficiary are fully taxed on the terminal return.|Ch 10: Estate
-A client has $10k in a TFSA and $10k in an RRSP. They need $5,000 for an emergency and are in a 40% tax bracket. Which is better?|Withdraw from RRSP|Withdraw from TFSA|Take a credit card advance|Sell their car|1|TFSA withdrawals are tax-free; RRSP withdrawals would lose $2,000 (40%) to taxes immediately.|Ch 4: Taxation
-Sarah is 35 and wants $1M at age 60. She has $200k now earning 6%. How much more does she need to reach her goal?|She is on track|She needs approx. $140,000 more today|She needs $800,000 more|She should stop saving|1|PV of $1M in 25 years at 6% is ~$233k. She has $200k, so she is roughly $33k short in PV terms.|Ch 5: Math
-A client buys a $900k home with $100k down. Is CMHC insurance required?|No, because it is under $1M|Yes, because the down payment is less than 20%|No, because they have a high salary|Only if the interest rate is variable|1|Any down payment less than 20% ($180k in this case) requires mortgage default insurance.|Ch 3: Mortgages
-Mr. Gupta dies intestate in Ontario leaving a spouse and two children. The estate is worth $400k. How much does the spouse get?|$133,333|$200,000|$350,000 plus 1/3 of the remainder|$400,000|2|In Ontario, the preferential share is $350k. The spouse gets that first, then 1/3 of the leftover $50k.|Ch 10: Estate
-An advisor notices a client's cognitive abilities are declining. What is the most appropriate first step?|Sell all their stocks immediately|Contact the person named in their Power of Attorney|Ask the client for a new medical exam|Close the account|1|The POA is specifically designed to protect the client's interests during mental incapacity.|Ch 10: Estate
-A client in a 45% bracket earns $1,000 in interest. Another in a 20% bracket earns $1,000 in capital gains. Who keeps more?|The 45% bracket client|The 20% bracket client|They keep the same amount|It depends on the bank|1|Capital gain tax is only on 50% ($500 x 0.20 = $100 tax). Interest tax is 100% ($1000 x 0.45 = $450 tax).|Ch 4: Taxation
-A business owner wants to minimize tax at death for their private company. Which strategy is common?|An Estate Freeze|Buying more equipment|Hiring family members|Moving the office to another province|0|An estate freeze locks in the current value and passes future growth (and tax) to heirs.|Ch 10: Estate
-A client has $2k/mo surplus. They want to pay down a 6% mortgage or invest in a 3% GIC. Which is better?|Invest in the GIC|Pay down the mortgage|Keep the cash in a chequing account|Spend it on a vacation|1|Paying down debt at 6% is equivalent to a 'guaranteed' 6% return, which beats the 3% GIC.|Ch 2: Budgeting
-An investor's portfolio dropped 20% last year and gained 20% this year. What is the total result?|Break even|Down 4%|Up 4%|Up 10%|1|100 - 20% = 80. 80 + 20% = 96. Total loss of 4%.|Ch 7: Investments
-A 65-year-old earns $120k. They receive OAS. What should they expect?|A large bonus from the government|To pay back a portion of OAS via the recovery tax|OAS to be tax-free|OAS to be doubled|1|Income over the threshold (approx $90k) triggers the 15% OAS clawback.|Ch 8: Retirement
-Which insurance is best for a young couple with a $600k mortgage and a new baby?|Whole Life|Universal Life|20-Year Term Life|Variable Life|2|Term life provides the highest amount of coverage for the lowest cost during the high-debt years.|Ch 9: Risk
-A client is offered a 'rebate' on commissions if they buy a specific fund. What must the advisor do?|Accept it secretly|Decline and report it to the manager|Disclose the conflict of interest to the client|Give half to the client|2|Transparency and disclosure of all conflicts is a core ethical requirement.|Ch 11: Ethics
-A 71-year-old has a $1M RRSP. They don't need the money. Can they avoid the RRIF conversion?|Yes, if they are still working|No, it is mandatory by Dec 31 of age 71|Only if they have a spouse under 71|Yes, by moving it to a TFSA|1|Conversion is a legal requirement regardless of need or employment status.|Ch 8: Retirement
-A client has $100k in a TFSA. They move to the US and keep the account. What is the risk?|The CRA will seize it|The US (IRS) may tax the growth|It automatically converts to an RRSP|Nothing, it remains tax-free globally|1|While tax-free in Canada, the US does not recognize the TFSA's tax-exempt status.|Ch 4: Taxation
-An executor is worried about personal liability for the deceased's unpaid taxes. What do they need?|A lawyer's note|A Clearance Certificate from the CRA|A letter from the bank|A new Will|1|The Clearance Certificate confirms all taxes are paid before assets are distributed.|Ch 10: Estate
-A client wants to save for their grandchild's education. If the child doesn't go to school, what happens?|The money is forfeited|The grants (CESG) are returned to the government|The grandparents get a tax credit|The child gets the money tax-free anyway|1|Grants must be returned if not used for education; the principal returns to the subscriber.|Ch 7: Investments
-Which definition of disability is the most restrictive for a surgeon?|Own Occupation|Any Occupation|Regular Occupation|Total Disability|1|'Any Occupation' means they won't get paid if they can still work as a greeter or clerk.|Ch 9: Risk
-A client has $500k in life insurance naming their 5-year-old son as beneficiary. What is the issue?|Minors cannot receive funds directly; they will be held by the court/Public Trustee|The child will spend it on toys|The child won't get it until age 65|The insurance company keeps the money|0|Minors cannot legally manage large sums; a trust should be established instead.|Ch 10: Estate
-An investor wants to avoid 'Unsystematic Risk'. What should they do?|Buy only one great stock|Diversify across 30+ stocks in different sectors|Buy gold bars|Keep all money in a savings account|1|Diversification eliminates company-specific (unsystematic) risk.|Ch 7: Investments
-A client is in the 50% tax bracket. They earn $1,000 in Canadian Dividends (Grossed up to $1,380). What is the first step of tax?|Pay tax on $1,000|Pay tax on $1,380|Pay tax on $500|Pay no tax|1|Dividends are taxed on the 'grossed-up' amount before the dividend tax credit is applied.|Ch 4: Taxation
-What is the primary risk of a 'Variable' rate mortgage during high inflation?|The house will lose value|The monthly payments or amortization period will increase|The bank will take the house|The interest rate will drop|1|As central banks raise rates to fight inflation, variable mortgage costs rise.|Ch 3: Mortgages
-A client has a $10,000 capital loss. They have no capital gains this year. What can they do?|Deduct it from their salary|Carry it back 3 years or forward indefinitely to offset future gains|Refund it from the CRA|Give it to their spouse|1|Capital losses can only offset capital gains, not other types of income.|Ch 4: Taxation
-A client has $500k in a LIRA. They are 55 and want to withdraw $50k for a boat. Can they?|Yes, it's their money|No, LIRAs are locked until retirement age with very strict exceptions|Only if they pay 50% tax|Yes, if they promise to pay it back|1|LIRAs are 'Locked-in' to ensure they provide a lifetime retirement income.|Ch 8: Retirement
-Which document is the 'final word' on how assets are split after death?|The Will|A verbal promise|A sticky note on the fridge|A text message to the kids|0|A legally executed Will is the only binding document for estate distribution.|Ch 10: Estate
-An advisor is asked to back-date a document to help a client get a loan. What is this?|A helpful service|Fraud and a violation of Integrity|A standard banking practice|Fine if the manager says yes|1|Integrity requires honesty; back-dating is a serious legal and ethical breach.|Ch 11: Ethics
-A client has a $4,000/mo mortgage and $6,000/mo gross income. What is their GDS?|33%|50%|66%|75%|2|4000 / 6000 = 66%. This client would likely not qualify for a new mortgage.|Ch 2: Budgeting
-What is the main advantage of 'Joint Tenancy with Right of Survivorship' for a cottage?|It's cheaper to buy|It avoids the cottage being taxed|It bypasses probate and goes directly to the survivor|It prevents the bank from seizing it|2|JTWROS is a common way to ensure smooth transition of property to a spouse.|Ch 10: Estate
-An investor has a 'Low' risk tolerance but a 40-year time horizon. What is the challenge?|They will lose all their money|Inflation will erode their purchasing power over 40 years|They will pay too much tax|They can't buy any stocks|1|Being too conservative over a long period is a risk (Inflation Risk).|Ch 7: Investments
-If a client is 71, what is their deadline to convert an RRSP?|Their birthday|December 31st of that year|April 30th of the next year|Never|1|The conversion must be finalized by the end of the calendar year they turn 71.|Ch 8: Retirement
-Which insurance covers a business if a 'Key Person' dies?|Group Life|Key Person Insurance|Business Overhead Insurance|Workers Comp|1|It provides the business with cash to find and train a replacement.|Ch 9: Risk
-A client has a $500k house and $200k mortgage. They take a $100k HELOC. What is their LTV?|20%|40%|60%|80%|2|(200k + 100k) / 500k = 60%.|Ch 3: Mortgages
-What is the 'Rights or Things' return used for?|To claim a refund for a car|To report income like unpaid bonuses earned before death|To sue a bank|To register a child for school|1|It is an optional return that can significantly reduce the tax bill at death.|Ch 10: Estate
-A client wants a 'Guaranteed' return higher than the bank's GIC. What should you tell them?|Buy gold|Buy Bitcoin|Higher potential returns always come with higher risk|Wait for the market to crash|2|The 'Risk-Return Tradeoff' is a fundamental concept of investing.|Ch 7: Investments
-A couple has $50k in a joint account. One dies. In most provinces, what happens?|The bank freezes it for 1 year|The survivor gets full access immediately (Right of Survivorship)|The government takes half|The kids get half|1|Joint accounts usually pass to the survivor without probate.|Ch 10: Estate
-An advisor moves to a new firm. Can they take client files with them?|Yes, they belong to the advisor|No, they belong to the firm and contain private data|Only if the client is a relative|Yes, if they use a USB stick|1|Client records are the property of the firm and protected by privacy laws.|Ch 12: Regulation
-What is 'Asset Allocation'?|Picking the best stock|Choosing the right mix of Stocks, Bonds, and Cash|Saving 10% of salary|Buying a rental property|1|Asset allocation is the biggest factor in portfolio performance.|Ch 7: Investments
-A client has $5,000 in credit card debt at 20% and $5,000 in a 2% savings account. Advice?|Buy more stocks|Pay off the credit card with the savings|Keep the savings for a rainy day|Increase the credit limit|1|Paying off 20% debt is like getting a guaranteed 20% return.|Ch 2: Budgeting
-What is the 'CDIC' limit for a joint account?|$100,000 per person|$100,000 for the account|$250,000|$1,000,000|1|CDIC covers $100k for joint accounts, separate from individual accounts.|Ch 12: Regulation
-Which retirement benefit is NOT indexed?|OAS|CPP|Most private employer pensions|GIS|2|Unlike government benefits, most private pensions do not increase with inflation.|Ch 8: Retirement
-A client is 65 and hasn't lived in Canada for 40 years. Do they get full OAS?|Yes|No, it is based on years of residence after age 18|Only if they are rich|Only if they have kids in Canada|1|Full OAS requires 40 years of residence; partial is available after 10 years.|Ch 8: Retirement
-Which mortgage term is usually the most popular in Canada?|1-year variable|5-year fixed|25-year fixed|10-year variable|1|The 5-year fixed is the standard benchmark for the Canadian market.|Ch 3: Mortgages
-What is a 'CRA Clearance Certificate'?|A permission to sell a house|Proof that an estate's taxes are fully paid|A tax refund check|A new social insurance number|1|Executors must obtain this to avoid being personally liable for the deceased's taxes.|Ch 10: Estate
-What is the 'Time Value of Money'?|Money is worth more in the future|A dollar today is worth more than a dollar tomorrow|Time is money|Interest rates always go up|1|Because of earning potential and inflation, current money is more valuable.|Ch 5: Math
-A client is 40 and wants to save for a child's education in 10 years. Risk profile?|100% Cash|Moderate (Balanced)|100% aggressive stocks|Gold only|1|A 10-year horizon allows for some growth with managed risk.|Ch 7: Investments
-What is 'Probate' in simple terms?|A tax on the living|A court proving a Will is the 'real' one|A way to avoid tax|A life insurance policy|1|It gives the executor the 'official' power to act.|Ch 10: Estate
-An investor buys a $1,000 bond at 'Par'. What does this mean?|They bought it at a discount|They bought it at its face value|They bought it from the government|They bought it with a credit card|1|Par value is the face value of the bond.|Ch 7: Investments
-Which stage of the planning process involves 'Brainstorming'?|Gathering|Analyzing|Developing recommendations|Monitoring|2|This is the creative phase where solutions are designed.|Ch 1: Process
-A client has $100/mo to save. Where should they start?|High-risk stocks|Paying off high-interest debt|Buying a big life insurance policy|Giving it to charity|1|Debt repayment is the foundation of a good financial plan.|Ch 2: Budgeting
-What is 'Diversification' intended to do?|Increase returns to 100%|Reduce the impact of any one investment failing|Avoid all taxes|Make the advisor more money|1|It spreads risk across different areas.|Ch 7: Investments
-A client wants to retire 'wealthy'. What is the problem with this goal?|It's too expensive|It's not 'SMART' (Specific, Measurable, etc.)|It's impossible|It's illegal|1|Goals must be specific (e.g., $5,000/month income).|Ch 1: Process
-Which insurance is a 'Must-Have' for a homeowner with a family?|Pet insurance|Life and Disability insurance|Travel insurance|Identity theft insurance|1|The home and lifestyle depend on the breadwinner's income.|Ch 9: Risk
-What happens to a POA when the donor dies?|It becomes stronger|It is passed to the kids|It expires immediately|It is converted to a Will|2|POA is for the living; the Will is for the deceased.|Ch 10: Estate
-An advisor is offered a free trip by a fund company. What is this?|A nice reward|A potential Conflict of Interest|A standard industry perk|A tax deduction|1|Conflicts must be avoided or strictly disclosed to clients.|Ch 11: Ethics
-What is the benefit of a TFSA over an RRSP for a low-income earner?|Higher grants|Withdrawals don't affect income-tested benefits like GIS|More investment choices|Lower fees|1|RRSP withdrawals are 'income' and can trigger OAS/GIS clawbacks.|Ch 8: Retirement
-Which is a 'Lagging' economic indicator?|Stock market|Building permits|Unemployment rate|Money supply|2|Unemployment changes after the economy has already moved.|Ch 2: Economics
-What is 'GDP'?|General Debt Principal|Gross Domestic Product|Government Daily Payroll|Global Deposit Portfolio|1|The total value of goods/services produced in a country.|Ch 2: Economics
-What is 'Deflation'?|Prices going up|Prices going down|Taxes going up|Interest rates staying the same|1|Deflation is the opposite of inflation.|Ch 2: Economics
-Which policy is set by the Bank of Canada?|Fiscal Policy|Monetary Policy|Trade Policy|Health Policy|1|The Bank of Canada manages interest rates and money supply.|Ch 2: Economics
-A client has $50k in a TFSA and withdraws $10k today. Can they put it back tomorrow?|Yes|No, they must wait until Jan 1st of next year|Only if they have extra room|Yes, but with a penalty|1|Withdrawal room is only added back at the start of the next calendar year.|Ch 5: Investments
-If a client dies with no Will and no relatives, where does the money go?|To the bank|To the 'Crown' (Government)|To the neighbors|To the charity of the bank's choice|1|This is called 'Escheat.'|Ch 10: Estate
-Which investment is the 'Safest' from principal loss?|Common stocks|Corporate bonds|Government of Canada T-Bills|Bitcoin|2|T-Bills are backed by the federal government.|Ch 7: Investments
-What is 'Liquidity Risk'?|Risk of a flood|Risk of not being able to sell an asset quickly for its fair value|Risk of a bank closing|Risk of the dollar falling|1|Real estate and private businesses have high liquidity risk.|Ch 7: Investments
-What is 'Rebalancing' a portfolio?|Buying more of what went up|Selling what went up and buying what went down to hit target weights|Closing the account|Moving everything to cash|1|Rebalancing maintains the desired risk level.|Ch 7: Investments
-Which stage of the lifecycle is 'Late Career'?|Age 0-25|Age 25-45|Age 55-65|Age 85+|2|This is the peak earning and 'catch-up' savings phase.|Ch 1: Process
-A client has a $200k mortgage at 5%. They win $50k. Impact of paying off the mortgage?|They lose the interest|They save $2,500/year in interest and shorten the term|The bank will sue them|Nothing|1|Paying down debt is a guaranteed 'after-tax' return.|Ch 3: Mortgages
-What is the 'Principal Residence Exemption'?|You don't have to pay property tax|You don't pay capital gains tax when you sell your main home|The bank can't take your home|You get a free house from the government|1|This is one of the biggest tax breaks in Canada.|Ch 4: Taxation
-Which questioning style is best for a first meeting?|Yes/No questions|Open-ended questions (How, What, Why)|Leading questions|Silence|1|Open-ended questions encourage the client to share details.|Ch 1: Process
-How often should a financial plan be reviewed?|Every 10 years|Only when the client asks|At least annually or during major life events|Never|2|Monitoring is essential to keep the plan 'alive.'|Ch 1: Process`;
-
+// --- CORE LOGIC ---
+let activeSet = null; let quizData = []; let idx = 0; let score = 0; 
+let answers = []; let examMode = false; let timer = null; let timeLeft = 10800;
 
 function parse(raw) {
-    return raw.trim().split('\n').filter(l => l.includes('|')).map(l => {
+    if(!raw) return [];
+    return raw.trim().split(/\r?\n/).filter(l => l.includes('|')).map(l => {
         const [q, a, b, c, d, corr, exp, ref] = l.split('|');
-        return { q, options: [a,b,c,d], corr: parseInt(corr), exp, ref };
+        return { q, options: [a,b,c,d], corr: parseInt(corr), exp, ref: ref || "CSI Textbook" };
     });
 }
 
-const sets = { 1: parse(set1Raw), 2: parse(set2Raw), 3: parse(set3Raw) };
-let currentQ = []; let idx = 0; let score = 0; let answers = []; let examMode = false; let timeRemaining = 10800; // 3 hours
-
 function startSet(n) {
-    currentQ = [...sets[n]].sort(() => Math.random() - 0.5);
-    examMode = false; launch();
+    activeSet = n;
+    const raw = n === 1 ? set1Raw : n === 2 ? set2Raw : set3Raw;
+    const parsed = parse(raw);
+    
+    const saved = localStorage.getItem('fp1_save_set' + n);
+    if(saved) {
+        const state = JSON.parse(saved);
+        quizData = state.quizData; idx = state.idx; score = state.score; answers = state.answers;
+    } else {
+        quizData = [...parsed].sort(() => Math.random() - 0.5);
+        idx = 0; score = 0; answers = [];
+        saveProgress();
+    }
+    examMode = false;
+    document.getElementById("timer-text").classList.add("d-none");
+    launch();
 }
 
 function startExam() {
-    // Combine all questions and take 80 at random
-    currentQ = [...sets[1], ...sets[2], ...sets[3]].sort(() => Math.random() - 0.5).slice(0, 80);
     examMode = true;
-    document.getElementById("timer-container").classList.remove("d-none");
+    const all = [...parse(set1Raw), ...parse(set2Raw), ...parse(set3Raw)];
+    quizData = all.sort(() => Math.random() - 0.5).slice(0, 80);
+    idx = 0; score = 0; answers = [];
+    timeLeft = 10800;
     document.getElementById("timer-text").classList.remove("d-none");
     launch();
     startTimer();
 }
 
 function launch() {
-    idx = 0; score = 0; answers = [];
     document.getElementById("selection-ui").classList.add("d-none");
     document.getElementById("quiz-ui").classList.remove("d-none");
+    document.getElementById("result-ui").classList.add("d-none");
     showQ();
 }
 
 function showQ() {
-    const data = currentQ[idx];
-    document.getElementById("q-meta").innerText = `Question ${idx + 1} of ${currentQ.length}`;
+    const data = quizData[idx];
+    document.getElementById("q-counter").innerText = `Q ${idx + 1}/${quizData.length}`;
     document.getElementById("question-text").innerText = data.q;
-    document.getElementById("mode-text").innerText = examMode ? "Exam Simulation" : "Practice Mode";
-    const container = document.getElementById("options-container"); container.innerHTML = "";
+    document.getElementById("mode-label").innerText = examMode ? "Exam Simulation" : "Practice Mode";
+    document.getElementById("progress-fill").style.width = ((idx / quizData.length) * 100) + "%";
     
+    const box = document.getElementById("options-box"); box.innerHTML = "";
     data.options.forEach((opt, i) => {
-        const btn = document.createElement("button"); btn.className = "option-box"; btn.innerText = opt;
+        const btn = document.createElement("button"); btn.className = "option-btn"; btn.innerText = opt;
         btn.onclick = () => select(i, btn);
-        if (answers[idx] !== undefined) {
+        if(answers[idx] !== undefined) {
             btn.disabled = true;
-            if (i === data.corr) btn.classList.add("correct");
-            if (i === answers[idx] && i !== data.corr) btn.classList.add("wrong");
+            if(i === data.corr) btn.classList.add("correct");
+            if(i === answers[idx] && i !== data.corr) btn.classList.add("wrong");
         }
-        container.appendChild(btn);
+        box.appendChild(btn);
     });
-    
+
     const fb = document.getElementById("feedback");
-    if (answers[idx] !== undefined) {
-        fb.classList.remove("d-none"); fb.className = "mt-3 p-3 rounded-4 border " + (answers[idx] === data.corr ? "alert-success" : "alert-danger");
-        fb.innerHTML = `<b>${answers[idx] === data.corr ? 'Correct!' : 'Incorrect'}</b><br><small>${data.exp}</small>`;
+    if(answers[idx] !== undefined) {
+        fb.className = "mt-3 p-3 rounded-4 border " + (answers[idx] === data.corr ? "alert-success" : "alert-danger");
+        fb.innerHTML = `<b>${answers[idx] === data.corr ? 'Correct' : 'Incorrect'}</b><br><small>${data.exp}</small>`;
+        fb.classList.remove("d-none");
         document.getElementById("next-btn").classList.remove("d-none");
-    } else { fb.classList.add("d-none"); document.getElementById("next-btn").classList.add("d-none"); }
-    document.getElementById("back-btn").disabled = idx === 0;
+    } else {
+        fb.classList.add("d-none");
+        document.getElementById("next-btn").classList.add("d-none");
+    }
+    document.getElementById("back-btn").disabled = (idx === 0);
 }
 
 function select(i, btn) {
-    if (answers[idx] !== undefined) return;
-    answers[idx] = i; if (i === currentQ[idx].corr) score++;
+    if(answers[idx] !== undefined) return;
+    answers[idx] = i;
+    if(i === quizData[idx].corr) score++;
+    saveProgress();
     showQ();
 }
 
-function nextQ() { 
-    if (idx < currentQ.length - 1) { idx++; showQ(); } 
-    else { finishExam(); }
+function nextQ() {
+    if(idx < quizData.length - 1) { idx++; showQ(); }
+    else { finish(); }
 }
-function prevQ() { if (idx > 0) { idx--; showQ(); } }
+
+function prevQ() { if(idx > 0) { idx--; showQ(); } }
+
+function goHome() {
+    clearInterval(timer);
+    document.getElementById("quiz-ui").classList.add("d-none");
+    document.getElementById("result-ui").classList.add("d-none");
+    document.getElementById("selection-ui").classList.remove("d-none");
+    updateStats();
+}
+
+function finish() {
+    clearInterval(timer);
+    document.getElementById("quiz-ui").classList.add("d-none");
+    document.getElementById("result-ui").classList.remove("d-none");
+    const pct = Math.round((score/quizData.length)*100);
+    document.getElementById("final-score").innerText = pct + "%";
+    document.getElementById("result-msg").innerText = pct >= 60 ? "Great job! You passed the simulation." : "Keep studying. Focus on the chapters you missed.";
+}
 
 function startTimer() {
-    const interval = setInterval(() => {
-        timeRemaining--;
-        let h = Math.floor(timeRemaining/3600); let m = Math.floor((timeRemaining%3600)/60); let s = timeRemaining%60;
+    timer = setInterval(() => {
+        timeLeft--;
+        const h = Math.floor(timeLeft/3600); const m = Math.floor((timeLeft%3600)/60); const s = timeLeft%60;
         document.getElementById("timer-text").innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        document.getElementById("timer-fill").style.width = (timeRemaining/10800)*100 + "%";
-        if (timeRemaining <= 0) { clearInterval(interval); finishExam(); }
-        if (!examMode) clearInterval(interval);
+        if(timeLeft <= 0) finish();
     }, 1000);
 }
 
-function finishExam() {
-    document.getElementById("quiz-ui").classList.add("d-none");
-    document.getElementById("result-ui").classList.remove("d-none");
-    document.getElementById("score-text").innerText = Math.round((score/currentQ.length)*100) + "%";
+function saveProgress() {
+    if(!examMode) {
+        localStorage.setItem('fp1_save_set' + activeSet, JSON.stringify({ quizData, idx, score, answers }));
+    }
 }
 
-function showHint() { alert("Reference: " + currentQ[idx].ref); }
+function updateStats() {
+    [1,2,3].forEach(n => {
+        const s = localStorage.getItem('fp1_save_set' + n);
+        if(s) {
+            const data = JSON.parse(s);
+            const done = data.answers.filter(x => x !== undefined).length;
+            document.getElementById("stat-" + n).innerText = Math.round((done/data.quizData.length)*100) + "%";
+        }
+    });
+}
 
-// --- CALCULATOR ---
-function toggleCalc() { const c = document.getElementById("calculator"); c.style.display = c.style.display === "block" ? "none" : "block"; }
-function calcInput(v) { document.getElementById("calc-display").value += v; }
-function calcClear() { document.getElementById("calc-display").value = ""; }
-function calcEval() { try { document.getElementById("calc-display").value = eval(document.getElementById("calc-display").value); } catch(e) { calcClear(); } }
+function resetAll() { if(confirm("Clear all data?")) { localStorage.clear(); location.reload(); } }
+function resetCurrentSet() { localStorage.removeItem('fp1_save_set' + activeSet); startSet(activeSet); }
+function showHint() { alert("Study Ref: " + quizData[idx].ref); }
+
+// --- CALC ---
+function toggleCalc() { const w = document.getElementById("calculator"); const g = document.getElementById("calc-widget"); g.style.display = g.style.display === "block" ? "none" : "block"; }
+function cIn(v) { document.getElementById("calc-screen").value += v; }
+function cClr() { document.getElementById("calc-screen").value = ""; }
+function cRes() { try { document.getElementById("calc-screen").value = eval(document.getElementById("calc-screen").value); } catch(e) { cClr(); } }
+
+updateStats();
 </script>
 </body>
 </html>
