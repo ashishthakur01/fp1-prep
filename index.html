@@ -11,33 +11,111 @@
     <script src="questions.js"></script>
 
     <style>
-        :root { --primary: #0f172a; --accent: #3b82f6; --success: #10b981; --danger: #f43f5e; --bg: #f8fafc; }
-        body { background: var(--bg); font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #334155; -webkit-user-select: none; user-select: none; }
-        .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; padding: 15px; }
-        
-        /* Premium Card UI */
-        .main-card { background: white; border-radius: 30px; padding: 25px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; flex-grow: 1; display: flex; flex-direction: column; }
-        
-        /* Progress & Timer */
-        .progress-container { height: 6px; background: #e2e8f0; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; }
-        #timer-text { font-family: monospace; font-weight: bold; font-size: 1.1rem; }
+        :root { 
+            --primary: #0f172a; 
+            --accent: #3b82f6; 
+            --success: #10b981; 
+            --danger: #f43f5e; 
+            --bg: #f8fafc; 
+        }
 
-        /* Option Buttons */
-        .option-btn { width: 100%; text-align: left; margin-bottom: 12px; padding: 18px; border: 2px solid #f1f5f9; border-radius: 20px; background: white; transition: 0.2s; font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between; }
+        body { 
+            background: var(--bg); 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            color: #334155; 
+            -webkit-user-select: none; 
+            user-select: none; 
+        }
+
+        .app-container { 
+            max-width: 500px; 
+            margin: 0 auto; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            padding: 15px; 
+        }
+
+        /* Modern UI Components */
+        .main-card { 
+            background: white; 
+            border-radius: 30px; 
+            padding: 25px; 
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); 
+            border: 1px solid #e2e8f0; 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        .option-btn { 
+            width: 100%; 
+            text-align: left; 
+            margin-bottom: 12px; 
+            padding: 18px; 
+            border: 2px solid #f1f5f9; 
+            border-radius: 20px; 
+            background: white; 
+            transition: 0.2s; 
+            font-size: 0.95rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+        }
+
         .option-btn:hover:not(:disabled) { border-color: var(--accent); background: #f0f7ff; }
+        
         .correct { background: #dcfce7 !important; border-color: var(--success) !important; color: #166534; font-weight: 600; }
         .wrong { background: #fee2e2 !important; border-color: var(--danger) !important; color: #991b1b; }
 
-        /* Set Selection Buttons */
-        .set-card { width: 100%; padding: 20px; border: 2px solid #f1f5f9; border-radius: 20px; background: white; text-align: left; margin-bottom: 12px; transition: 0.2s; position: relative; }
+        .progress-container { height: 6px; background: #e2e8f0; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; }
+
+        /* Practice Set Cards */
+        .set-card { 
+            width: 100%; 
+            padding: 20px; 
+            border: 2px solid #f1f5f9; 
+            border-radius: 20px; 
+            background: white; 
+            text-align: left; 
+            margin-bottom: 12px; 
+            transition: 0.2s; 
+            position: relative; 
+        }
         .set-card:active { transform: scale(0.98); }
         .badge-score { position: absolute; right: 20px; top: 20px; font-size: 0.75rem; }
 
-        /* Floating Calculator */
-        .calc-fab { position: fixed; bottom: 25px; right: 25px; width: 55px; height: 55px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px rgba(0,0,0,0.2); z-index: 1000; cursor: pointer; }
-        #calc-widget { display: none; position: fixed; bottom: 90px; right: 20px; width: 260px; background: white; border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); padding: 20px; z-index: 1000; border: 1px solid #e2e8f0; }
-        .calc-btn { height: 45px; border-radius: 12px; font-weight: bold; }
+        /* Floating Utilities */
+        .calc-fab { 
+            position: fixed; 
+            bottom: 25px; 
+            right: 25px; 
+            width: 55px; 
+            height: 55px; 
+            background: var(--primary); 
+            color: white; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 10px 15px rgba(0,0,0,0.2); 
+            z-index: 1000; 
+            cursor: pointer; 
+        }
+        #calc-widget { 
+            display: none; 
+            position: fixed; 
+            bottom: 90px; 
+            right: 20px; 
+            width: 260px; 
+            background: white; 
+            border-radius: 25px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15); 
+            padding: 20px; 
+            z-index: 1000; 
+            border: 1px solid #e2e8f0; 
+        }
     </style>
 </head>
 <body>
@@ -45,35 +123,40 @@
 <div class="app-container">
     <div id="selection-ui" class="main-card my-auto">
         <div class="text-center mb-4">
-            <h2 class="fw-bold mb-0">CSI Master</h2>
-            <p class="text-muted small">FP1 Prep • 2026 Technical Standards</p>
+            <h2 class="fw-bold mb-0">CSI FP1 Master</h2>
+            <p class="text-muted small">Full Curriculum Prep • 2026 Technical Standards</p>
         </div>
-        
+
         <div class="d-grid gap-2">
-            <button class="btn btn-primary py-3 rounded-4 fw-bold shadow-sm mb-2" onclick="startExam()">
+            <button class="btn btn-primary py-3 rounded-4 fw-bold shadow-sm mb-3" onclick="startExam()">
                 <i class="bi bi-stopwatch-fill me-2"></i> 3-Hour Exam Simulation
             </button>
             
-            <p class="text-muted small fw-bold mt-2 mb-2">PRACTICE SETS</p>
+            <p class="text-muted small fw-bold mt-2 mb-2">PRACTICE BY CHAPTER</p>
+            
             <button class="set-card" onclick="startSet(1)">
                 <span class="badge bg-light text-dark badge-score" id="stat-1">0%</span>
-                <div class="fw-bold">Set 1: Foundations</div>
-                <small class="text-muted">Ethics, Process & Theory</small>
+                <div class="fw-bold">Set 1: Planning & Lending</div>
+                <small class="text-muted">Process, Budgeting & Mortgages (Ch 1–3)</small>
             </button>
+
             <button class="set-card" onclick="startSet(2)">
                 <span class="badge bg-light text-dark badge-score" id="stat-2">0%</span>
-                <div class="fw-bold">Set 2: Technical Math</div>
-                <small class="text-muted">Tax, Mortgages & TVM</small>
+                <div class="fw-bold">Set 2: Tax & Retirement</div>
+                <small class="text-muted">Income Tax, CPP/OAS & Pensions (Ch 4–6)</small>
             </button>
+
             <button class="set-card" onclick="startSet(3)">
                 <span class="badge bg-light text-dark badge-score" id="stat-3">0%</span>
-                <div class="fw-bold">Set 3: Advanced Cases</div>
-                <small class="text-muted">Estate & Insurance Scenarios</small>
+                <div class="fw-bold">Set 3: Estate & Risk</div>
+                <small class="text-muted">Wills, POA & Insurance Mastery (Ch 7–8)</small>
             </button>
-        </div>
 
-        <div class="mt-auto text-center pt-4">
-            <small class="text-danger opacity-50" style="cursor:pointer" onclick="resetAll()">Clear All Progress</small>
+            <div class="mt-4 text-center">
+                <small class="text-danger opacity-50" style="cursor:pointer" onclick="resetAll()">
+                    <i class="bi bi-trash3 me-1"></i> Clear All Progress
+                </small>
+            </div>
         </div>
     </div>
 
@@ -82,7 +165,7 @@
             <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="goHome()">
                 <i class="bi bi-x-lg"></i> Exit
             </button>
-            <div id="timer-text" class="text-danger d-none">03:00:00</div>
+            <div id="timer-text" class="text-danger fw-bold d-none">03:00:00</div>
             <i class="bi bi-info-circle-fill text-muted fs-4" style="cursor:pointer" onclick="showHint()"></i>
         </div>
 
@@ -92,7 +175,7 @@
 
         <div class="d-flex justify-content-between small text-muted mb-3">
             <span id="mode-label">Practice Mode</span>
-            <span id="q-counter">Q 1/70</span>
+            <span id="q-counter">Q 1/80</span>
         </div>
 
         <div class="flex-grow-1">
@@ -121,181 +204,194 @@
 <div id="calc-widget">
     <input type="text" id="calc-screen" class="form-control mb-3 text-end fs-4 fw-bold py-2" readonly placeholder="0">
     <div class="row g-2">
-        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('7')">7</button></div>
-        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('8')">8</button></div>
-        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('9')">9</button></div>
-        <div class="col-3"><button class="btn btn-warning w-100 calc-btn" onclick="cIn('/')">÷</button></div>
-        
-        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('4')">4</button></div>
-        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('5')">5</button></div>
-        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('6')">6</button></div>
-        <div class="col-3"><button class="btn btn-warning w-100 calc-btn" onclick="cIn('*')">×</button></div>
-        
-        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('1')">1</button></div>
-        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('2')">2</button></div>
-        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('3')">3</button></div>
-        <div class="col-3"><button class="btn btn-warning w-100 calc-btn" onclick="cIn('-')">-</button></div>
-        
-        <div class="col-3"><button class="btn btn-danger w-100 calc-btn" onclick="cClr()">C</button></div>
-        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('0')">0</button></div>
-        <div class="col-3"><button class="btn btn-light w-100 calc-btn" onclick="cIn('.')">.</button></div>
-        <div class="col-3"><button class="btn btn-warning w-100 calc-btn" onclick="cIn('+')">+</button></div>
-        
-        <div class="col-12"><button class="btn btn-success w-100 calc-btn" onclick="cRes()">=</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 py-2" onclick="cIn('7')">7</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 py-2" onclick="cIn('8')">8</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 py-2" onclick="cIn('9')">9</button></div>
+        <div class="col-3"><button class="btn btn-warning w-100 py-2" onclick="cIn('/')">÷</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 py-2" onclick="cIn('4')">4</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 py-2" onclick="cIn('5')">5</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 py-2" onclick="cIn('6')">6</button></div>
+        <div class="col-3"><button class="btn btn-warning w-100 py-2" onclick="cIn('*')">×</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 py-2" onclick="cIn('1')">1</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 py-2" onclick="cIn('2')">2</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 py-2" onclick="cIn('3')">3</button></div>
+        <div class="col-3"><button class="btn btn-warning w-100 py-2" onclick="cIn('-')">-</button></div>
+        <div class="col-3"><button class="btn btn-danger w-100 py-2" onclick="cClr()">C</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 py-2" onclick="cIn('0')">0</button></div>
+        <div class="col-3"><button class="btn btn-light w-100 py-2" onclick="cIn('.')">.</button></div>
+        <div class="col-3"><button class="btn btn-warning w-100 py-2" onclick="cIn('+')">+</button></div>
+        <div class="col-12"><button class="btn btn-success w-100 py-2 fw-bold" onclick="cRes()">=</button></div>
     </div>
 </div>
 
 <script>
-// --- CORE LOGIC ---
-let activeSet = null; let quizData = []; let idx = 0; let score = 0; 
-let answers = []; let examMode = false; let timer = null; let timeLeft = 10800;
+    let activeSet = null; 
+    let quizData = []; 
+    let idx = 0; 
+    let score = 0; 
+    let answers = []; 
+    let examMode = false; 
+    let timer = null; 
+    let timeLeft = 10800; // 3 Hours
 
-function parse(raw) {
-    if(!raw) return [];
-    return raw.trim().split(/\r?\n/).filter(l => l.includes('|')).map(l => {
-        const [q, a, b, c, d, corr, exp, ref] = l.split('|');
-        return { q, options: [a,b,c,d], corr: parseInt(corr), exp, ref: ref || "CSI Textbook" };
-    });
-}
+    function parse(raw) {
+        if(!raw) return [];
+        return raw.trim().split(/\r?\n/).filter(l => l.includes('|')).map(l => {
+            const [q, a, b, c, d, corr, exp, ref] = l.split('|');
+            return { q, options: [a,b,c,d], corr: parseInt(corr), exp, ref: ref || "CSI Textbook" };
+        });
+    }
 
-function startSet(n) {
-    activeSet = n;
-    const raw = n === 1 ? set1Raw : n === 2 ? set2Raw : set3Raw;
-    const parsed = parse(raw);
-    
-    const saved = localStorage.getItem('fp1_save_set' + n);
-    if(saved) {
-        const state = JSON.parse(saved);
-        quizData = state.quizData; idx = state.idx; score = state.score; answers = state.answers;
-    } else {
-        quizData = [...parsed].sort(() => Math.random() - 0.5);
+    function startSet(n) {
+        activeSet = n;
+        const raw = n === 1 ? set1Raw : n === 2 ? set2Raw : set3Raw;
+        const parsed = parse(raw);
+        
+        const saved = localStorage.getItem('fp1_save_set' + n);
+        if(saved) {
+            const state = JSON.parse(saved);
+            quizData = state.quizData; idx = state.idx; score = state.score; answers = state.answers;
+        } else {
+            quizData = [...parsed].sort(() => Math.random() - 0.5);
+            idx = 0; score = 0; answers = [];
+        }
+        
+        examMode = false;
+        document.getElementById("timer-text").classList.add("d-none");
+        launch();
+    }
+
+    function startExam() {
+        const all = [...parse(set1Raw), ...parse(set2Raw), ...parse(set3Raw)];
+        quizData = all.sort(() => Math.random() - 0.5).slice(0, 80);
         idx = 0; score = 0; answers = [];
-        saveProgress();
+        timeLeft = 10800;
+        examMode = true;
+        document.getElementById("timer-text").classList.remove("d-none");
+        launch();
+        startTimer();
     }
-    examMode = false;
-    document.getElementById("timer-text").classList.add("d-none");
-    launch();
-}
 
-function startExam() {
-    examMode = true;
-    const all = [...parse(set1Raw), ...parse(set2Raw), ...parse(set3Raw)];
-    quizData = all.sort(() => Math.random() - 0.5).slice(0, 80);
-    idx = 0; score = 0; answers = [];
-    timeLeft = 10800;
-    document.getElementById("timer-text").classList.remove("d-none");
-    launch();
-    startTimer();
-}
+    function launch() {
+        document.getElementById("selection-ui").classList.add("d-none");
+        document.getElementById("quiz-ui").classList.remove("d-none");
+        document.getElementById("result-ui").classList.add("d-none");
+        showQ();
+    }
 
-function launch() {
-    document.getElementById("selection-ui").classList.add("d-none");
-    document.getElementById("quiz-ui").classList.remove("d-none");
-    document.getElementById("result-ui").classList.add("d-none");
-    showQ();
-}
+    function showQ() {
+        const data = quizData[idx];
+        document.getElementById("q-counter").innerText = `Q ${idx + 1}/${quizData.length}`;
+        document.getElementById("question-text").innerText = data.q;
+        document.getElementById("mode-label").innerText = examMode ? "Exam Simulation" : "Practice Mode";
+        document.getElementById("progress-fill").style.width = ((idx / quizData.length) * 100) + "%";
 
-function showQ() {
-    const data = quizData[idx];
-    document.getElementById("q-counter").innerText = `Q ${idx + 1}/${quizData.length}`;
-    document.getElementById("question-text").innerText = data.q;
-    document.getElementById("mode-label").innerText = examMode ? "Exam Simulation" : "Practice Mode";
-    document.getElementById("progress-fill").style.width = ((idx / quizData.length) * 100) + "%";
-    
-    const box = document.getElementById("options-box"); box.innerHTML = "";
-    data.options.forEach((opt, i) => {
-        const btn = document.createElement("button"); btn.className = "option-btn"; btn.innerText = opt;
-        btn.onclick = () => select(i, btn);
+        const box = document.getElementById("options-box");
+        box.innerHTML = "";
+        data.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.innerText = opt;
+            btn.onclick = () => select(i, btn);
+            if(answers[idx] !== undefined) {
+                btn.disabled = true;
+                if(i === data.corr) btn.classList.add("correct");
+                if(i === answers[idx] && i !== data.corr) btn.classList.add("wrong");
+            }
+            box.appendChild(btn);
+        });
+
+        const fb = document.getElementById("feedback");
         if(answers[idx] !== undefined) {
-            btn.disabled = true;
-            if(i === data.corr) btn.classList.add("correct");
-            if(i === answers[idx] && i !== data.corr) btn.classList.add("wrong");
+            fb.className = "mt-3 p-3 rounded-4 border alert " + (answers[idx] === data.corr ? "alert-success" : "alert-danger");
+            fb.innerHTML = `<b>${answers[idx] === data.corr ? 'Correct' : 'Incorrect'}</b><br><small>${data.exp}</small>`;
+            fb.classList.remove("d-none");
+            document.getElementById("next-btn").classList.remove("d-none");
+        } else {
+            fb.classList.add("d-none");
+            document.getElementById("next-btn").classList.add("d-none");
         }
-        box.appendChild(btn);
-    });
-
-    const fb = document.getElementById("feedback");
-    if(answers[idx] !== undefined) {
-        fb.className = "mt-3 p-3 rounded-4 border " + (answers[idx] === data.corr ? "alert-success" : "alert-danger");
-        fb.innerHTML = `<b>${answers[idx] === data.corr ? 'Correct' : 'Incorrect'}</b><br><small>${data.exp}</small>`;
-        fb.classList.remove("d-none");
-        document.getElementById("next-btn").classList.remove("d-none");
-    } else {
-        fb.classList.add("d-none");
-        document.getElementById("next-btn").classList.add("d-none");
+        document.getElementById("back-btn").disabled = (idx === 0);
     }
-    document.getElementById("back-btn").disabled = (idx === 0);
-}
 
-function select(i, btn) {
-    if(answers[idx] !== undefined) return;
-    answers[idx] = i;
-    if(i === quizData[idx].corr) score++;
-    saveProgress();
-    showQ();
-}
-
-function nextQ() {
-    if(idx < quizData.length - 1) { idx++; showQ(); }
-    else { finish(); }
-}
-
-function prevQ() { if(idx > 0) { idx--; showQ(); } }
-
-function goHome() {
-    clearInterval(timer);
-    document.getElementById("quiz-ui").classList.add("d-none");
-    document.getElementById("result-ui").classList.add("d-none");
-    document.getElementById("selection-ui").classList.remove("d-none");
-    updateStats();
-}
-
-function finish() {
-    clearInterval(timer);
-    document.getElementById("quiz-ui").classList.add("d-none");
-    document.getElementById("result-ui").classList.remove("d-none");
-    const pct = Math.round((score/quizData.length)*100);
-    document.getElementById("final-score").innerText = pct + "%";
-    document.getElementById("result-msg").innerText = pct >= 60 ? "Great job! You passed the simulation." : "Keep studying. Focus on the chapters you missed.";
-}
-
-function startTimer() {
-    timer = setInterval(() => {
-        timeLeft--;
-        const h = Math.floor(timeLeft/3600); const m = Math.floor((timeLeft%3600)/60); const s = timeLeft%60;
-        document.getElementById("timer-text").innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        if(timeLeft <= 0) finish();
-    }, 1000);
-}
-
-function saveProgress() {
-    if(!examMode) {
-        localStorage.setItem('fp1_save_set' + activeSet, JSON.stringify({ quizData, idx, score, answers }));
+    function select(i) {
+        if(answers[idx] !== undefined) return;
+        answers[idx] = i;
+        if(i === quizData[idx].corr) score++;
+        saveProgress();
+        showQ();
     }
-}
 
-function updateStats() {
-    [1,2,3].forEach(n => {
-        const s = localStorage.getItem('fp1_save_set' + n);
-        if(s) {
-            const data = JSON.parse(s);
-            const done = data.answers.filter(x => x !== undefined).length;
-            document.getElementById("stat-" + n).innerText = Math.round((done/data.quizData.length)*100) + "%";
+    function nextQ() {
+        if(idx < quizData.length - 1) { idx++; showQ(); }
+        else { finish(); }
+    }
+
+    function prevQ() { if(idx > 0) { idx--; showQ(); } }
+
+    function startTimer() {
+        if(timer) clearInterval(timer);
+        timer = setInterval(() => {
+            timeLeft--;
+            const h = Math.floor(timeLeft/3600);
+            const m = Math.floor((timeLeft%3600)/60);
+            const s = timeLeft%60;
+            document.getElementById("timer-text").innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            if(timeLeft <= 0) finish();
+        }, 1000);
+    }
+
+    function finish() {
+        clearInterval(timer);
+        document.getElementById("quiz-ui").classList.add("d-none");
+        document.getElementById("result-ui").classList.remove("d-none");
+        const pct = Math.round((score/quizData.length)*100);
+        document.getElementById("final-score").innerText = pct + "%";
+        document.getElementById("result-msg").innerText = pct >= 60 ? "Congratulations! You passed the simulation." : "Keep practicing. Review the feedback on difficult chapters.";
+    }
+
+    function goHome() {
+        clearInterval(timer);
+        document.getElementById("quiz-ui").classList.add("d-none");
+        document.getElementById("result-ui").classList.add("d-none");
+        document.getElementById("selection-ui").classList.remove("d-none");
+        updateStats();
+    }
+
+    function saveProgress() {
+        if(!examMode) {
+            localStorage.setItem('fp1_save_set' + activeSet, JSON.stringify({ quizData, idx, score, answers }));
         }
-    });
-}
+    }
 
-function resetAll() { if(confirm("Clear all data?")) { localStorage.clear(); location.reload(); } }
-function resetCurrentSet() { localStorage.removeItem('fp1_save_set' + activeSet); startSet(activeSet); }
-function showHint() { alert("Study Ref: " + quizData[idx].ref); }
+    function updateStats() {
+        [1,2,3].forEach(n => {
+            const s = localStorage.getItem('fp1_save_set' + n);
+            if(s) {
+                const data = JSON.parse(s);
+                const done = data.answers.filter(x => x !== undefined).length;
+                document.getElementById("stat-" + n).innerText = Math.round((done/data.quizData.length)*100) + "%";
+            }
+        });
+    }
 
-// --- CALC ---
-function toggleCalc() { const w = document.getElementById("calculator"); const g = document.getElementById("calc-widget"); g.style.display = g.style.display === "block" ? "none" : "block"; }
-function cIn(v) { document.getElementById("calc-screen").value += v; }
-function cClr() { document.getElementById("calc-screen").value = ""; }
-function cRes() { try { document.getElementById("calc-screen").value = eval(document.getElementById("calc-screen").value); } catch(e) { cClr(); } }
+    function showHint() { alert("Study Ref: " + quizData[idx].ref); }
+    function resetAll() { if(confirm("Clear all progress?")) { localStorage.clear(); location.reload(); } }
+    
+    // Calculator Functions
+    function toggleCalc() { 
+        const g = document.getElementById("calc-widget"); 
+        g.style.display = g.style.display === "block" ? "none" : "block"; 
+    }
+    function cIn(v) { document.getElementById("calc-screen").value += v; }
+    function cClr() { document.getElementById("calc-screen").value = ""; }
+    function cRes() { 
+        try { document.getElementById("calc-screen").value = eval(document.getElementById("calc-screen").value); } 
+        catch(e) { cClr(); } 
+    }
 
-updateStats();
+    window.onload = updateStats;
 </script>
+
 </body>
 </html>
